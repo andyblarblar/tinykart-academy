@@ -2,9 +2,13 @@
 #include "pins.hpp"
 #include "esc.hpp"
 #include "kart.hpp"
+#include "ld06.hpp"
 
 // Robot control
 TinyKart *tinyKart;
+
+// LiDAR
+LD06 *ld06;
 
 /// Starts/stops the kart
 void estop() {
@@ -15,8 +19,6 @@ void estop() {
 }
 
 void setup() {
-    pinMode(LIDAR_PIN, INPUT); //TODO move to lidar driver
-
     // LEDs
     pinMode(LED_GREEN, OUTPUT);
     pinMode(LED_RED, OUTPUT);
@@ -37,8 +39,8 @@ void setup() {
         delay(20);
     }
 
-    // Init UART
-    Serial1.begin(230400, SERIAL_8N1); //TODO replace with LiDAR driver? Look into enabling DMA
+    // Init Lidar
+    ld06 = new LD06{Serial5, LIDAR_PIN};
 
     // Init PWM
     analogWriteResolution(PWM_BITS); // Range of 0-4096
@@ -53,4 +55,9 @@ void setup() {
 }
 
 void loop() {
+    auto scan = ld06->update();
+
+    if (scan) {
+        Serial.printf("Scan start angle: %i \n", (int) (*scan).start_angle);
+    }
 }
