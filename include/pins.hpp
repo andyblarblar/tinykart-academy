@@ -9,17 +9,10 @@ constexpr int THROTTLE_PIN = PA_0; // Actually D0
 /// LiDAR UART
 constexpr int LIDAR_PIN = PB_15;
 
-namespace tk {
-    /// Configures pin modes
-    void setup_pins() {
-        // Perfs
-        pinMode(STEERING_PIN, OUTPUT);
-        pinMode(THROTTLE_PIN, OUTPUT);
-        pinMode(LIDAR_PIN, INPUT);
+/// PWM frequency in hz
+constexpr auto PWM_FREQ = 100;
 
-        // LEDs
-        pinMode(LED_GREEN, OUTPUT);
-        pinMode(LED_RED, OUTPUT);
-        pinMode(LED_YELLOW, OUTPUT);
-    }
-}
+/// PWM resolution in bits
+constexpr auto PWM_BITS = 12;
+/// Value for max duty cycle in PWM
+constexpr auto PWM_MAX_DUTY = 1 << PWM_BITS;
