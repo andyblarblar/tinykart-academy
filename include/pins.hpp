@@ -7,7 +7,7 @@ constexpr int STEERING_PIN = PE_9; // Actually A1
 /// Throttle PWM
 constexpr int THROTTLE_PIN = PA_0; // Actually D0
 /// LiDAR UART
-constexpr int LIDAR_PIN = PB_15;
+constexpr int LIDAR_PIN = PB_5; // Actually D11
 
 /// PWM frequency in hz
 constexpr auto PWM_FREQ = 100;
