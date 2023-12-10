@@ -64,19 +64,20 @@ struct LD06Frame {
 };
 
 class LD06 {
-    HardwareSerial &serial;
-    uint8_t buf[47];
-    uint8_t buf_idx = 0;
+    uint8_t current_scan[47];
+    int8_t left_in_current_scan = 47;
+    uint8_t next_scan[47];
+    int8_t left_in_next_scan = 47;
 
     std::optional<LD06Frame> process_buffer() {
         // Check if header is first byte
-        if (buf[0] != 0x54) {
+        if (current_scan[0] != 0x54) {
             Serial.println("Scan misaligned!");
             return std::nullopt;
         }
 
         // Check for errors
-        if (CalCRC8(buf, 47) != 0) {
+        if (CalCRC8(current_scan, 47) != 0) {
             Serial.println("CRC Failed!");
             return std::nullopt;
         }
@@ -84,54 +85,69 @@ class LD06 {
         LD06Frame packet{};
 
         // Begin reads
-        packet.radar_speed = reinterpret_cast<uint16_t *>(buf)[2];
-        packet.start_angle = float(reinterpret_cast<uint16_t *>(buf)[4]) / 100;
+        packet.radar_speed = reinterpret_cast<uint16_t *>(current_scan)[2];
+        packet.start_angle = float(reinterpret_cast<uint16_t *>(current_scan)[4]) / 100;
 
         // Read ranges (indexes 6-41)
         for (int i = 6, j = 0; i < 42; i += 3, j++) {
-            packet.data[j].dist = reinterpret_cast<uint16_t *>(buf)[i];
-            packet.data[j].confidence = buf[i + 2];
+            packet.data[j].dist = reinterpret_cast<uint16_t *>(current_scan)[i];
+            packet.data[j].confidence = current_scan[i + 2];
         }
 
-        packet.end_angle = float(reinterpret_cast<uint16_t *>(buf)[42]) / 100;
-        packet.timestamp = reinterpret_cast<uint16_t *>(buf)[44];
-        packet.crc8 = buf[46];
+        packet.end_angle = float(reinterpret_cast<uint16_t *>(current_scan)[42]) / 100;
+        packet.timestamp = reinterpret_cast<uint16_t *>(current_scan)[44];
+        packet.crc8 = current_scan[46];
+
+        // Swap buffers
+        memcpy((void *) current_scan, (void *) next_scan, 47);
+        left_in_current_scan = left_in_next_scan;
+        left_in_next_scan = 47;
 
         return packet;
     }
 
 public:
-    explicit LD06(HardwareSerial &serial, int uart_rx_pin) : serial(serial) {
-        pinMode(uart_rx_pin, INPUT);
-        serial.begin(230400, SERIAL_8N1);
-    }
-
-    std::optional<LD06Frame> update() {
-        Serial.printf("Avail: %i \n", serial.available());
-        // Read packets from serial byte by byte
-        if (serial.available() > 0) {
-            auto byte_s = serial.read(); //TODO make into reading array instead, this is too slow
-            uint8_t byte = byte_s;
-
-            Serial.printf("Read: %i\n", byte_s);
-
-            // Align with header if it appears later in a packet
-            if (byte == 0x54 && buf_idx != 0) {
-                Serial.println("resetting buffer...");
-                buf_idx = 0;
-            }
-            buf[buf_idx] = byte;
-            buf_idx++;
-
-            Serial.printf("index at: %i\n", buf_idx);
-
-            // Full packet scanned
-            if (buf_idx == 47) {
-                buf_idx = 0;
-                return this->process_buffer();
-            }
+    void add_buffer(uint8_t *buffer) {
+        if (left_in_current_scan == 0 && left_in_next_scan == 0) {
+            Serial.println("Dropping scan!");
+            return;
         }
 
-        return std::nullopt;
+        // Explicitly align if new scan
+        if (left_in_current_scan == 47) {
+            // Find header byte
+            uint8_t header_idx = 0;
+            for (uint8_t i = 0; i < 47; i++) {
+                if (buffer[i] == 0x54) {
+                    header_idx = i;
+                    break;
+                }
+            }
+
+            // Only copy header onwards
+            memcpy((void *) current_scan, (void *) (buffer + header_idx), 47 - header_idx);
+            left_in_current_scan = 47 - (47 - header_idx);
+            return;
+        }
+
+        // Room left in current scan
+        if (left_in_current_scan != 0) {
+            auto next_idx = 47 - left_in_current_scan - 1;
+
+            auto current_len = 47 - left_in_current_scan;
+            memcpy((void *) (current_scan + next_idx), (void *) buffer, current_len);
+            left_in_current_scan = 0;
+
+            // TODO very sus math here
+            memcpy((void *) next_scan, (void *) (buffer + (47 - current_len - 1)), 47 - current_len);
+            left_in_next_scan = 47 - (47 - current_len);
+        }
+
+        // TODO write into next when current full
+    }
+
+    std::optional<LD06Frame> get_scan() {
+        auto res = this->process_buffer();
+        // TODO finish
     }
 };
