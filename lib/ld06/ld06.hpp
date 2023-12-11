@@ -2,6 +2,7 @@
 
 #include "optional"
 
+// TODO move this stuff into a C file
 static const uint8_t CrcTable[256] =
         {
                 0x00, 0x4d, 0x9a, 0xd7, 0x79, 0x34, 0xe3,
@@ -63,6 +64,8 @@ struct LD06Frame {
     uint8_t crc8;
 };
 
+typedef uint8_t LD06Buffer[47];
+
 class LD06 {
     uint8_t current_scan[47];
     int8_t left_in_current_scan = 47;
@@ -72,13 +75,11 @@ class LD06 {
     std::optional<LD06Frame> process_buffer() {
         // Check if header is first byte
         if (current_scan[0] != 0x54) {
-            Serial.println("Scan misaligned!");
             return std::nullopt;
         }
 
         // Check for errors
         if (CalCRC8(current_scan, 47) != 0) {
-            Serial.println("CRC Failed!");
             return std::nullopt;
         }
 
@@ -111,9 +112,8 @@ public:
     /// Scan frame fragmentation will be handled in the driver.
     ///
     /// This function is not threadsafe with get_scan.
-    void add_buffer(uint8_t *buffer) {
+    void add_buffer(LD06Buffer buffer) {
         if (left_in_current_scan == 0 && left_in_next_scan == 0) {
-            Serial.println("Dropping scan!");
             return;
         }
 
@@ -157,6 +157,10 @@ public:
 
     /// Returns a scan, if one is available and valid.
     std::optional<LD06Frame> get_scan() {
+        if (this->left_in_current_scan != 0) {
+            return std::nullopt;
+        }
+
         return this->process_buffer();
     }
 };

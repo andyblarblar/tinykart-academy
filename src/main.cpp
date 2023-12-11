@@ -3,16 +3,18 @@
 #include "esc.hpp"
 #include "kart.hpp"
 #include "ld06.hpp"
+#include "dma.hpp"
+#include "logger.hpp"
 
 // Robot control
 TinyKart *tinyKart;
 
 // LiDAR
-LD06 *ld06;
+LD06 ld06{};
 
 /// Starts/stops the kart
 void estop() {
-    Serial.println("Toggle Pause");
+    logger.println("Toggle Pause");
 
     tinyKart->toggle_pause();
     digitalToggle(LED_YELLOW);
@@ -31,16 +33,7 @@ void setup() {
     pinMode(USER_BTN, INPUT);
     attachInterrupt(digitalPinToInterrupt(USER_BTN), estop, FALLING);
 
-    // Connect to PC for logging
-    Serial.begin(9600);
-
-    // Init PC serial
-    while (!Serial.availableForWrite()) {
-        delay(20);
-    }
-
-    // Init Lidar
-    ld06 = new LD06{Serial5, LIDAR_PIN};
+    pinMode(LIDAR_PIN, INPUT);
 
     // Init PWM
     analogWriteResolution(PWM_BITS); // Range of 0-4096
@@ -50,14 +43,27 @@ void setup() {
     ESC esc{THROTTLE_PIN, PWM_MAX_DUTY, PWM_FREQ};
     tinyKart = new TinyKart{STEERING_PIN, esc};
 
+    // Init DMA and UART for LiDAR
+    dmaSerialRx5.begin(230'400, [&](LD06Buffer buffer) {
+        // On each packet received, copy over to driver.
+        // NOTE: this code runs in the DMA IRQ, so edit with care.
+        ld06.add_buffer(buffer);
+    });
+
     digitalWrite(LED_RED, LOW);
     digitalWrite(LED_GREEN, HIGH);
 }
 
 void loop() {
-    auto scan = ld06->update();
+    //TODO try to get logger working as a first step, I think the pins arnt enabled
+    logger.println("LOOOOP");
 
-    if (scan) {
-        Serial.printf("Scan start angle: %i \n", (int) (*scan).start_angle);
+    noInterrupts();
+    auto res = ld06.get_scan();
+    interrupts();
+
+    if (res) {
+        digitalToggle(LED_RED);
+        logger.println("Got scan!");
     }
 }
