@@ -107,6 +107,10 @@ class LD06 {
     }
 
 public:
+    /// Adds a 47 byte scan buffer to the driver. This could be from ex. UART or DMA.
+    /// Scan frame fragmentation will be handled in the driver.
+    ///
+    /// This function is not threadsafe with get_scan.
     void add_buffer(uint8_t *buffer) {
         if (left_in_current_scan == 0 && left_in_next_scan == 0) {
             Serial.println("Dropping scan!");
@@ -134,20 +138,25 @@ public:
         if (left_in_current_scan != 0) {
             auto next_idx = 47 - left_in_current_scan - 1;
 
-            auto current_len = 47 - left_in_current_scan;
-            memcpy((void *) (current_scan + next_idx), (void *) buffer, current_len);
+            // Fill remaining current scan
+            memcpy((void *) (current_scan + next_idx), (void *) buffer, left_in_current_scan);
+
+            // Copy rest to next scan
+            memcpy((void *) next_scan, (void *) (buffer + left_in_current_scan), 47 - left_in_current_scan);
+            left_in_next_scan = 47 - (47 - left_in_current_scan);
             left_in_current_scan = 0;
-
-            // TODO very sus math here
-            memcpy((void *) next_scan, (void *) (buffer + (47 - current_len - 1)), 47 - current_len);
-            left_in_next_scan = 47 - (47 - current_len);
+            return;
         }
-
-        // TODO write into next when current full
+            // Current full, copy to what is left of next
+        else {
+            auto next_idx = 47 - left_in_next_scan - 1;
+            memcpy((void *) (next_scan + next_idx), (void *) buffer, left_in_next_scan);
+            left_in_next_scan = 0;
+        }
     }
 
+    /// Returns a scan, if one is available and valid.
     std::optional<LD06Frame> get_scan() {
-        auto res = this->process_buffer();
-        // TODO finish
+        return this->process_buffer();
     }
 };
