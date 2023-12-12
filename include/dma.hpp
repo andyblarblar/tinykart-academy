@@ -5,7 +5,7 @@
 
 // So close to not hardcoding :(
 constexpr size_t DMA_LIDAR_BUFFER_SIZE = 47;
-uint8_t dma_lidar_buffer[DMA_LIDAR_BUFFER_SIZE] = {0};
+volatile uint8_t dma_lidar_buffer[DMA_LIDAR_BUFFER_SIZE] = {0};
 
 class DMASerialRx {
     /// Handle to HAL UART perf
@@ -22,11 +22,6 @@ class DMASerialRx {
     }
 
     void MX_UART_Init(uint32_t baud) {
-        // TODO currently hardcoded to 5
-        __HAL_RCC_UART5_FORCE_RESET();
-        __HAL_RCC_UART5_RELEASE_RESET();
-        __HAL_RCC_UART5_CLK_ENABLE();
-
         raw_serial.Init.BaudRate = baud;
         raw_serial.Init.WordLength = UART_WORDLENGTH_8B;
         raw_serial.Init.StopBits = UART_STOPBITS_1;
@@ -52,16 +47,21 @@ class DMASerialRx {
     }
 
 public:
-    /// User supplied callback called on each serial transfer completion.
+    /// User supplied callback called on each serial transfer completion. Note that this is not called in the IRQ, rather
+    /// The hals request complete callback.
     std::function<void(uint8_t *)> cb;
 
-    void begin(uint32_t baud, std::function<void(uint8_t *)> rx_callback) {
+    void init(uint32_t baud, std::function<void(uint8_t *)> rx_callback) {
         MX_DMA_Init();
         MX_UART_Init(baud);
         cb = std::move(rx_callback);
+        // TODO overrun instantly occurs here, find how to turn on USART_CR3.OVRDIS
+    }
 
+    // TODO once done fold this back into init
+    void begin() {
         // Call first DMA receive to start the train
-        HAL_UART_Receive_DMA(&raw_serial, dma_lidar_buffer, DMA_LIDAR_BUFFER_SIZE);
+        HAL_UART_Receive_DMA(&raw_serial, const_cast<uint8_t *>(dma_lidar_buffer), DMA_LIDAR_BUFFER_SIZE);
     }
 
     explicit DMASerialRx(USART_TypeDef *uart) {
@@ -72,11 +72,17 @@ public:
 // Initialize singletons for each peripheral (like normal Arduino)
 DMASerialRx dmaSerialRx5{UART5};
 
-// Called on reach DMA finish
+// Called on each DMA finish
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     // Call user callback
-    dmaSerialRx5.cb(dma_lidar_buffer);
+    dmaSerialRx5.cb(const_cast<uint8_t *>(dma_lidar_buffer));
 
     // Recurse
-    HAL_UART_Receive_DMA(huart, dma_lidar_buffer, DMA_LIDAR_BUFFER_SIZE);
+    HAL_UART_Receive_DMA(huart, const_cast<uint8_t *>(dma_lidar_buffer), DMA_LIDAR_BUFFER_SIZE);
+}
+
+// Called on DMA error
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
+    // TODO is this even linked?
+    HAL_UART_Receive_DMA(huart, const_cast<uint8_t *>(dma_lidar_buffer), DMA_LIDAR_BUFFER_SIZE);
 }

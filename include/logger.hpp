@@ -7,10 +7,6 @@ class Logger {
     UART_HandleTypeDef huart3;
 
     void MX_USART3_UART_Init() {
-        __HAL_RCC_USART3_FORCE_RESET();
-        __HAL_RCC_USART3_RELEASE_RESET();
-        __HAL_RCC_USART3_CLK_ENABLE();
-
         huart3.Instance = USART3;
         huart3.Init.BaudRate = 115200;
         huart3.Init.WordLength = UART_WORDLENGTH_8B;
