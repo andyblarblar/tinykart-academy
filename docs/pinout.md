@@ -8,7 +8,7 @@ Lidar:
 
 - 5V from board 5V
 - GND to board GND
-- UART TX to PB15 (UART RX)
+- UART TX to PB_5 (UART RX)
 - PWM not used
 
 RC Car:
