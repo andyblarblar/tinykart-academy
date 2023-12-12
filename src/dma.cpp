@@ -60,6 +60,7 @@ DMASerialRx::DMASerialRx(USART_TypeDef *uart) {
     raw_serial.Instance = uart;
 }
 
+extern "C" {
 // Called on each DMA finish
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     // Call user callback
@@ -71,6 +72,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 // Called on DMA error
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
-    // TODO is this even linked?
     HAL_UART_Receive_DMA(huart, const_cast<uint8_t *>(dma_lidar_buffer), DMA_LIDAR_BUFFER_SIZE);
+}
 }
