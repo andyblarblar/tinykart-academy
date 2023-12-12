@@ -31,7 +31,9 @@ class DMASerialRx {
         raw_serial.Init.OverSampling = UART_OVERSAMPLING_16;
         raw_serial.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
         raw_serial.Init.ClockPrescaler = UART_PRESCALER_DIV1;
-        raw_serial.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+        // TODO below two may not be needed
+        raw_serial.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_RXOVERRUNDISABLE_INIT;
+        raw_serial.AdvancedInit.OverrunDisable = UART_ADVFEATURE_OVERRUN_DISABLE;
         if (HAL_UART_Init(&raw_serial) != HAL_OK) {
             Error_Handler();
         }
