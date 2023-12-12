@@ -58,7 +58,9 @@ void setup() {
 }
 
 void loop() {
+    noInterrupts();
     auto res = ld06.get_scan();
+    interrupts();
 
     if (res) {
         digitalToggle(LED_RED);
