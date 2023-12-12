@@ -43,4 +43,4 @@ public:
     }
 };
 
-Logger logger{};
+inline Logger logger{};

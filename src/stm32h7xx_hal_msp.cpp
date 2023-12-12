@@ -185,6 +185,14 @@ void DMA1_Stream0_IRQHandler(void) {
     HAL_DMA_IRQHandler(&hdma_uart5_rx);
 }
 
+/**
+  * @brief This function handles DMAMUX1 overrun interrupt.
+  */
+void DMAMUX1_OVR_IRQHandler(void) {
+    __NOP();
+}
+
+
 ///**
 //  * @brief This function handles UART5 global interrupt.
 //  */
