@@ -57,7 +57,24 @@ void loop() {
     interrupts();
 
     if (res) {
-        digitalToggle(LED_RED);
-        logger.printf("Scan start angle: %i\n", (int) res.value().start_angle);
+        auto scan_res = *res;
+
+        if (scan_res) {
+            logger.printf("Stamp: %u\n", scan_res.scan.timestamp);
+
+            for (int i = 0; i < 12; i++) {
+                //logger.printf("Range: %u\n", scan_res.scan.data[i].dist);
+            }
+        } else {
+            switch (scan_res.error) {
+                case ScanResult::Error::CRCFail:
+                    logger.print("CRC error!\n");
+                    break;
+
+                case ScanResult::Error::HeaderByteWrong:
+                    logger.print("Header byte wrong!\n");
+                    break;
+            }
+        }
     }
 }

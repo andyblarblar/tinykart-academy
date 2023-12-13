@@ -66,25 +66,57 @@ struct LD06Frame {
 
 typedef uint8_t LD06Buffer[47];
 
+struct ScanResult {
+    enum class Error : int8_t {
+        None = 1,
+        CRCFail = -1,
+        HeaderByteWrong = -2,
+    };
+
+    Error error;
+    LD06Frame scan;
+
+    explicit operator bool() const {
+        return error == Error::None;
+    }
+
+    ScanResult() = default;
+
+    explicit ScanResult(LD06Frame scan) : scan(scan), error(Error::None) {};
+
+    explicit ScanResult(Error err) : error(err) {};
+};
+
 class LD06 {
     uint8_t current_scan[47];
     int8_t left_in_current_scan = 47;
     uint8_t next_scan[47];
     int8_t left_in_next_scan = 47;
 
-    std::optional<LD06Frame> process_buffer() {
+    ScanResult process_buffer() {
         // Check if header is first byte
         if (current_scan[0] != 0x54) {
-            return std::nullopt;
+            // Swap buffers
+            memcpy((void *) current_scan, (void *) next_scan, 47);
+            left_in_current_scan = left_in_next_scan;
+            left_in_next_scan = 47;
+
+            return ScanResult{ScanResult::Error::HeaderByteWrong};
         }
 
         // Check for errors
         if (CalCRC8(current_scan, 47) != 0) {
-            return std::nullopt;
+            // Swap buffers
+            memcpy((void *) current_scan, (void *) next_scan, 47);
+            left_in_current_scan = left_in_next_scan;
+            left_in_next_scan = 47;
+
+            return ScanResult{ScanResult::Error::CRCFail};
         }
 
         LD06Frame packet{};
 
+        // TODO check this, it passes CRC but doesnt make sense. Could copy to a local buffer for interupt sanity
         // Begin reads
         packet.radar_speed = reinterpret_cast<uint16_t *>(current_scan)[2];
         packet.start_angle = float(reinterpret_cast<uint16_t *>(current_scan)[4]) / 100;
@@ -104,7 +136,7 @@ class LD06 {
         left_in_current_scan = left_in_next_scan;
         left_in_next_scan = 47;
 
-        return packet;
+        return ScanResult{packet};
     }
 
 public:
@@ -155,8 +187,8 @@ public:
         }
     }
 
-    /// Returns a scan, if one is available and valid.
-    std::optional<LD06Frame> get_scan() {
+    /// Returns a scan, if one is available.
+    std::optional<ScanResult> get_scan() {
         if (this->left_in_current_scan != 0) {
             return std::nullopt;
         }
