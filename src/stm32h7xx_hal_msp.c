@@ -1,6 +1,10 @@
 #include "stm32h7xx_hal.h"
 #include "stm32_def.h"
 
+/**
+ * @file Contains initialization code from CubeMX, as well as IRQs
+ */
+
 #define B1_Pin GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
 #define MCO_Pin GPIO_PIN_0
@@ -52,7 +56,14 @@
 #define LED_YELLOW_Pin GPIO_PIN_1
 #define LED_YELLOW_GPIO_Port GPIOE
 
+// Global perfs, put here because they need to be accessed in IRQs. To use these elsewhere, use the externs from the
+// uart.hpp header.
 DMA_HandleTypeDef hdma_uart5_rx;
+UART_HandleTypeDef huart5;
+
+/*
+ * These are MSP Inits called whenever a perf x_HAL_INIT function is called
+ */
 
 /**
 * @brief UART MSP Initialization
@@ -114,9 +125,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
 
         __HAL_LINKDMA(huart, hdmarx, hdma_uart5_rx);
 
-//        /* UART5 interrupt Init */
-//        HAL_NVIC_SetPriority(UART5_IRQn, 0, 0);
-//        HAL_NVIC_EnableIRQ(UART5_IRQn);
+        /* UART5 interrupt Init */
+        HAL_NVIC_SetPriority(UART5_IRQn, 0, 0);
+        HAL_NVIC_EnableIRQ(UART5_IRQn);
     } else if (huart->Instance == USART3) {
         /** Initializes the peripherals clock
         */
@@ -178,6 +189,10 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *huart) {
 
 }
 
+/*
+ * Perf IRQs, system IRQs are in the arduino code already
+ */
+
 /**
   * @brief This function handles DMA1 stream0 global interrupt.
   */
@@ -193,9 +208,9 @@ void DMAMUX1_OVR_IRQHandler(void) {
 }
 
 
-///**
-//  * @brief This function handles UART5 global interrupt.
-//  */
-//void UART5_IRQHandler(void) {
-//    HAL_UART_IRQHandler(&huart5);
-//}
+/**
+  * @brief This function handles UART5 global interrupt.
+  */
+void UART5_IRQHandler(void) {
+    HAL_UART_IRQHandler(&huart5);
+}

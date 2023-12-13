@@ -14,7 +14,7 @@ LD06 ld06{};
 
 /// Starts/stops the kart
 void estop() {
-    logger.println("Toggle Pause\n");
+    logger.print("Toggle Pause\n");
 
     tinyKart->toggle_pause();
     digitalToggle(LED_YELLOW);
@@ -42,19 +42,13 @@ void setup() {
     tinyKart = new TinyKart{STEERING_PIN, esc};
 
     // Init DMA and UART for LiDAR
-    dmaSerialRx5.init(230'400, [&](LD06Buffer buffer) {
+    dmaSerialRx5.init(230'400, [&](volatile LD06Buffer buffer) {
         // On each packet received, copy over to driver.
         ld06.add_buffer(buffer);
     });
 
     digitalWrite(LED_RED, LOW);
     digitalWrite(LED_GREEN, HIGH);
-
-    logger.println("About to enable DMA\n");
-
-    dmaSerialRx5.begin();
-
-    logger.println("Enabled DMA\n");
 }
 
 void loop() {
@@ -64,6 +58,6 @@ void loop() {
 
     if (res) {
         digitalToggle(LED_RED);
-        logger.println("Got scan!");
+        logger.printf("Scan start angle: %i\n", (int) res.value().start_angle);
     }
 }

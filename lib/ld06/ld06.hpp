@@ -112,7 +112,7 @@ public:
     /// Scan frame fragmentation will be handled in the driver.
     ///
     /// This function is not threadsafe with get_scan.
-    void add_buffer(LD06Buffer buffer) {
+    void add_buffer(volatile LD06Buffer buffer) {
         if (left_in_current_scan == 0 && left_in_next_scan == 0) {
             return;
         }
