@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdarg>
 #include "stm32h7xx_hal.h"
 #include "string_view"
 
@@ -37,10 +38,22 @@ public:
         MX_USART3_UART_Init();
     }
 
-    void println(std::string_view message) {
+    void print(std::string_view message) {
         HAL_UART_Transmit(&huart3, reinterpret_cast<const uint8_t *>(message.data()), message.size(),
                           HAL_UART_TIMEOUT_VALUE);
     }
+
+    void printf(const char *format, ...) {
+        std::va_list argv;
+        va_start(argv, format);
+
+        char buffer[128];
+        auto len = vsprintf(buffer, format, argv);
+        HAL_UART_Transmit(&huart3, reinterpret_cast<const uint8_t *>(buffer), len, HAL_UART_TIMEOUT_VALUE);
+
+        va_end(argv);
+    }
 };
 
+/// Logs messages to USART3, connected to the usb port.
 inline Logger logger{};
