@@ -1,8 +1,12 @@
 #pragma once
 
 #include "optional"
+#include "tuple"
+#include "vector"
 #include "cstdint"
 #include "cstring"
+#include "cassert"
+#include "cmath"
 
 /// A range reading
 struct Range {
@@ -28,6 +32,39 @@ struct LD06Frame {
     uint16_t timestamp;
     /// The CRC check from the lidar.
     uint8_t crc8;
+
+    /// Gets the angular step per range reading.
+    [[nodiscard]] float get_step() const {
+        // This is all to get the mod as an int to avoid floating point errors
+        auto diff = (uint32_t(end_angle * 100.0) + 36000 - uint32_t(start_angle * 100.0)) % 36000;
+        return float(diff / (12 - 1)) / 100.0f;
+    }
+
+    [[nodiscard]] float get_angle_of_reading(uint8_t reading_idx) const {
+        assert(reading_idx < 12);
+        auto angle = start_angle + get_step() * float(reading_idx);
+
+        if (angle > -360.0) {
+            angle -= 360.0;
+        }
+        return angle;
+    }
+
+    /// Translates the range from polar coordinates in terms of the LiDAR to polar coordinates in the standard format.
+    /// In practice, this is rotating all points by 90 degrees clockwise, then reflecting.
+    /// All angles are still in degrees.
+    [[nodiscard]] std::tuple<float, float> get_range_in_polar(uint8_t reading_idx) const {
+        auto range = float(data[reading_idx].dist);
+        auto angle = get_angle_of_reading(reading_idx);
+
+        auto p_deg = 90.0 - angle;
+        if (p_deg < 0.0) {
+            while (p_deg < 0.0) {
+                p_deg += 360.0;
+            }
+        }
+        return std::make_tuple(range, p_deg);
+    }
 };
 
 typedef uint8_t LD06Buffer[47];
@@ -85,4 +122,73 @@ public:
 
     /// Returns true if the drivers buffer is full, and will drop any new scans unless read.
     [[nodiscard]] bool will_drop() const;
+};
+
+struct ScanPoint {
+    /// Forward axis (mm)
+    float x;
+    /// Left positive axis (mm)
+    float y;
+
+    /// Distance in mm between two points
+    [[nodiscard]] float dist(const ScanPoint &other) const {
+        return std::hypot(x - other.x, y - other.y);
+    }
+};
+
+/// Filters individual scan frames into larger regions.
+class ScanBuilder {
+    float start;
+    float end;
+    std::vector<ScanPoint> buffer{};
+    bool last_scan_in_bounds = false;
+
+    [[nodiscard]] bool scan_in_range(float scan_start, float scan_end) const {
+        // The only valid config where end < start is split over 360/0
+        if (end < start) {
+            // If either start or end lands in the range, then that means some part of the scan is in the region we want
+            return (scan_start >= start && scan_start <= 360) || (scan_start <= end && scan_start >= 0) ||
+                   (scan_end >= start && scan_end <= 360) || (scan_end <= end && scan_end >= 0);
+        } else {
+            return (scan_start >= start && scan_start <= end) ||
+                   (scan_end >= start && scan_end <= end);
+        }
+    }
+
+public:
+
+    /// Creates filter. Angles are in degrees, where 360 is forwards.
+    /// \param start Start angle of filtered area
+    /// \param end End angle of filtered area
+    explicit ScanBuilder(float start, float end) : start(start), end(end) {};
+
+    /// Adds a frame to the scan builder
+    std::optional<std::vector<ScanPoint>> add_frame(const LD06Frame &frame) {
+        // Filter to in range
+        if (scan_in_range(frame.start_angle, frame.end_angle)) {
+            last_scan_in_bounds = true;
+
+            // Convert points to cartiesian points
+            for (int i = 0; i < 12; ++i) {
+                auto [range, angle] = frame.get_range_in_polar(i);
+                float radian_angle = angle * (float(M_PI) / 180);
+
+                float x = range * sinf(radian_angle);
+                float y = -(range * cosf(radian_angle));
+
+                buffer.push_back(ScanPoint{x, y});
+            }
+        }
+            // Full scan area covered
+        else if (last_scan_in_bounds) {
+            last_scan_in_bounds = false;
+
+            std::vector<ScanPoint> out{buffer};
+            buffer.clear();
+
+            return std::move(out);
+        }
+
+        return std::nullopt;
+    }
 };
