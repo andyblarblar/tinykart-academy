@@ -12,6 +12,9 @@ TinyKart *tinyKart;
 // LiDAR
 LD06 ld06{};
 
+// Scan processor
+ScanBuilder scan_builder{360 - 90, 90};
+
 /// Starts/stops the kart
 void estop() {
     logger.printf("Toggle Pause\n");
@@ -60,13 +63,25 @@ void loop() {
         auto scan_res = *res;
 
         if (scan_res) {
-            logger.printf("Start angle: %hu\n", (uint16_t) scan_res.scan.start_angle);
+            auto maybe_scan = scan_builder.add_frame(scan_res.scan);
 
-            for (int i = 0; i < 12; i++) {
-                logger.printf("Range: %hu\n", scan_res.scan.data[i].dist);
+            if (maybe_scan) {
+                auto scan = *maybe_scan;
+
+                logger.printf("*****START SCAN******\n");
+                for (auto &pt: scan) {
+                    logger.printf("Point: (%hu,%hu)\n", (uint16_t) pt.x, (uint16_t) pt.y);
+                }
+                logger.printf("*****END SCAN******\n\n");
+
+                // If object is 10cm in front of kart, stop TODO move this into auton or cleanup
+                if (scan[scan.size() / 2].dist(ScanPoint{0, 0}) < 100) {
+                    tinyKart->pause();
+                    digitalWrite(LED_YELLOW, HIGH);
+                }
+
+                // TODO add auton here
             }
-
-            logger.printf("End angle: %hu\n", (uint16_t) scan_res.scan.end_angle);
         } else {
             switch (scan_res.error) {
                 case ScanResult::Error::CRCFail:

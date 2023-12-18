@@ -68,4 +68,11 @@ public:
 
         this->estopped = !this->estopped;
     }
+
+    void pause() {
+        this->set_steering(0);
+        this->set_neutral();
+
+        this->estopped = true;
+    }
 };
