@@ -60,6 +60,7 @@
 // uart.hpp header.
 DMA_HandleTypeDef hdma_uart5_rx;
 UART_HandleTypeDef huart5;
+UART_HandleTypeDef huart3;
 
 /*
  * These are MSP Inits called whenever a perf x_HAL_INIT function is called
@@ -151,6 +152,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
         GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
         GPIO_InitStruct.Alternate = GPIO_AF7_USART3;
         HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+        HAL_NVIC_SetPriority(USART3_IRQn, 0, 0);
+        HAL_NVIC_EnableIRQ(USART3_IRQn);
     }
 
 }
@@ -213,4 +217,11 @@ void DMAMUX1_OVR_IRQHandler(void) {
   */
 void UART5_IRQHandler(void) {
     HAL_UART_IRQHandler(&huart5);
+}
+
+/**
+  * @brief This function handles USART3 global interrupt.
+  */
+void USART3_IRQHandler(void) {
+    HAL_UART_IRQHandler(&huart3);
 }

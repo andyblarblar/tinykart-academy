@@ -18,8 +18,14 @@ public:
     /// User supplied callback called on each serial transfer completion.
     std::function<void(volatile uint8_t *)> cb;
 
-    void init(uint32_t baud, std::function<void(volatile uint8_t *)> rx_callback);
+    /// Begins to receive data over this UART at some baud rate.
+    ///
+    /// \param baud Baud rate to initialize at
+    /// \param rx_callback Callback called when each buffer has been received. This will be called in an IRQ context.
+    void begin(uint32_t baud, std::function<void(volatile uint8_t *)> rx_callback);
 
+    /// Creates the skeleton of a buffered reader. The uart and raw peripheral passed here will be initialised on
+    /// a call to begin later.
     explicit DMASerialRx(UART_HandleTypeDef *huart, USART_TypeDef *uart);
 };
 

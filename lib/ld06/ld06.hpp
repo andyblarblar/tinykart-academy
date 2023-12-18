@@ -116,19 +116,18 @@ class LD06 {
 
         LD06Frame packet{};
 
-        // TODO check this, it passes CRC but doesnt make sense. Could copy to a local buffer for interupt sanity
         // Begin reads
-        packet.radar_speed = reinterpret_cast<uint16_t *>(current_scan)[2];
-        packet.start_angle = float(reinterpret_cast<uint16_t *>(current_scan)[4]) / 100;
+        packet.radar_speed = *reinterpret_cast<uint16_t *>(current_scan + 2);
+        packet.start_angle = float(*reinterpret_cast<uint16_t *>(current_scan + 4)) / 100;
 
         // Read ranges (indexes 6-41)
         for (int i = 6, j = 0; i < 42; i += 3, j++) {
-            packet.data[j].dist = reinterpret_cast<uint16_t *>(current_scan)[i];
+            packet.data[j].dist = *reinterpret_cast<uint16_t *>(current_scan + i);
             packet.data[j].confidence = current_scan[i + 2];
         }
 
-        packet.end_angle = float(reinterpret_cast<uint16_t *>(current_scan)[42]) / 100;
-        packet.timestamp = reinterpret_cast<uint16_t *>(current_scan)[44];
+        packet.end_angle = float(*reinterpret_cast<uint16_t *>(current_scan + 42)) / 100;
+        packet.timestamp = *reinterpret_cast<uint16_t *>(current_scan + 44);
         packet.crc8 = current_scan[46];
 
         // Swap buffers
@@ -140,11 +139,11 @@ class LD06 {
     }
 
 public:
-    /// Adds a 47 byte scan buffer to the driver. This could be from ex. UART or DMA.
+    /// Adds a scan buffer to the driver. This could be from ex. UART or DMA.
     /// Scan frame fragmentation will be handled in the driver.
     ///
     /// This function is not threadsafe with get_scan.
-    void add_buffer(volatile LD06Buffer buffer) {
+    void add_buffer(volatile LD06Buffer buffer, uint8_t len) {
         if (left_in_current_scan == 0 && left_in_next_scan == 0) {
             return;
         }
@@ -152,38 +151,62 @@ public:
         // Explicitly align if new scan
         if (left_in_current_scan == 47) {
             // Find header byte
-            uint8_t header_idx = 0;
-            for (uint8_t i = 0; i < 47; i++) {
+            uint8_t header_idx;
+            bool found = false;
+
+            for (uint8_t i = 0; i < len; i++) {
                 if (buffer[i] == 0x54) {
                     header_idx = i;
+                    found = true;
                     break;
                 }
             }
 
+            // Just return if no header byte was in buffer to align on
+            if (!found) {
+                return;
+            }
+
             // Only copy header onwards
-            memcpy((void *) current_scan, (void *) (buffer + header_idx), 47 - header_idx);
-            left_in_current_scan = 47 - (47 - header_idx);
+            memcpy((void *) current_scan, (void *) (buffer + header_idx), len - header_idx);
+            left_in_current_scan = 47 - (len - header_idx);
             return;
         }
 
         // Room left in current scan
         if (left_in_current_scan != 0) {
-            auto next_idx = 47 - left_in_current_scan - 1;
+            auto next_idx = 47 - left_in_current_scan;
 
-            // Fill remaining current scan
-            memcpy((void *) (current_scan + next_idx), (void *) buffer, left_in_current_scan);
+            // If buffer is large enough to overflow current scan
+            if (len >= left_in_current_scan) {
+                auto left_in_buf = len - left_in_current_scan;
 
-            // Copy rest to next scan
-            memcpy((void *) next_scan, (void *) (buffer + left_in_current_scan), 47 - left_in_current_scan);
-            left_in_next_scan = 47 - (47 - left_in_current_scan);
-            left_in_current_scan = 0;
+                // Fill remaining current scan
+                memcpy((void *) (current_scan + next_idx), (void *) buffer, left_in_current_scan);
+                left_in_current_scan = 0;
+
+                // TODO explicitly realign next scan here
+                // Copy rest to next scan
+                memcpy((void *) next_scan, (void *) (buffer + (len - left_in_buf)), left_in_buf);
+                left_in_next_scan = 47 - left_in_buf;
+            }
+                // If buffer won't fill current scan
+            else {
+                // Just copy all we can
+                memcpy((void *) (current_scan + next_idx), (void *) buffer, len);
+                left_in_current_scan -= len;
+            }
+
             return;
         }
             // Current full, copy to what is left of next
         else {
-            auto next_idx = 47 - left_in_next_scan - 1;
-            memcpy((void *) (next_scan + next_idx), (void *) buffer, left_in_next_scan);
-            left_in_next_scan = 0;
+            auto next_idx = 47 - left_in_next_scan;
+            auto write_len = len > left_in_next_scan ? left_in_next_scan : len;
+
+            // This will lose some bytes on the tail of the buffer, but we have no more scans to write to
+            memcpy((void *) (next_scan + next_idx), (void *) buffer, write_len);
+            left_in_next_scan -= write_len;
         }
     }
 
