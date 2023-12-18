@@ -1,11 +1,16 @@
 #pragma once
 
 #include <cstdarg>
+#include "deque"
 #include "stm32h7xx_hal.h"
 #include "string_view"
+#include "uart.hpp"
 
+/// Buffered logging to USART3, which is connected to the debugger on nucleo boards.
+/// This logger will asynchronously write messages over this uart, buffering them to avoid writing two messages at once.
+/// Because of this, messages will have to wait in the buffer FIFO, adding a delay before transmission. If the buffer is
+/// full, then messages are dropped.
 class Logger {
-    UART_HandleTypeDef huart3;
 
     void MX_USART3_UART_Init() {
         huart3.Instance = USART3;
@@ -34,26 +39,60 @@ class Logger {
     }
 
 public:
+    /// FIFO message queue
+    std::deque<String> buff{};
+
     Logger() {
         MX_USART3_UART_Init();
     }
 
-    void print(std::string_view message) {
-        HAL_UART_Transmit(&huart3, reinterpret_cast<const uint8_t *>(message.data()), message.size(),
-                          HAL_UART_TIMEOUT_VALUE);
-    }
+    bool printf(const char *format, ...) {
+        bool erred = false;
 
-    void printf(const char *format, ...) {
         std::va_list argv;
         va_start(argv, format);
 
+        // First format in local buffer
         char buffer[128];
         auto len = vsprintf(buffer, format, argv);
-        HAL_UART_Transmit(&huart3, reinterpret_cast<const uint8_t *>(buffer), len, HAL_UART_TIMEOUT_VALUE);
+
+        // Copy to heap
+        auto str = String{buffer};
+
+        // Add to buffer, and start transmit train if nothing is being transmitted
+        noInterrupts();
+        // Arbitrarily bound queue
+        if (buff.size() < 128) {
+            buff.push_back(str);
+            erred = true;
+        }
+
+        if (buff.size() == 1) {
+            HAL_UART_Transmit_IT(&huart3, reinterpret_cast<const uint8_t *>(buff.front().c_str()),
+                                 buff.front().length());
+        }
+        interrupts();
 
         va_end(argv);
+
+        return !erred;
     }
 };
 
 /// Logs messages to USART3, connected to the usb port.
 inline Logger logger{};
+
+extern "C" {
+// Called on each Tx finish
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
+    if (huart->Instance == USART3) {
+        logger.buff.pop_front();
+
+        // Transmit next in buffer
+        if (!logger.buff.empty()) {
+            HAL_UART_Transmit_IT(&huart3, reinterpret_cast<const uint8_t *>(logger.buff.front().c_str()),
+                                 logger.buff.front().length());
+        }
+    }
+}
+}

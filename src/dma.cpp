@@ -46,7 +46,7 @@ void DMASerialRx::MX_UART_Init(uint32_t baud) {
     }
 }
 
-void DMASerialRx::init(uint32_t baud, std::function<void(volatile uint8_t *)> rx_callback) {
+void DMASerialRx::begin(uint32_t baud, std::function<void(volatile uint8_t *)> rx_callback) {
     MX_DMA_Init();
     MX_UART_Init(baud);
     cb = std::move(rx_callback);

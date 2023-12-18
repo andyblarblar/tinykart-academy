@@ -14,7 +14,7 @@ LD06 ld06{};
 
 /// Starts/stops the kart
 void estop() {
-    logger.print("Toggle Pause\n");
+    logger.printf("Toggle Pause\n");
 
     tinyKart->toggle_pause();
     digitalToggle(LED_YELLOW);
@@ -42,9 +42,9 @@ void setup() {
     tinyKart = new TinyKart{STEERING_PIN, esc};
 
     // Init DMA and UART for LiDAR
-    dmaSerialRx5.init(230'400, [&](volatile LD06Buffer buffer) {
+    dmaSerialRx5.begin(230'400, [&](volatile LD06Buffer buffer) {
         // On each packet received, copy over to driver.
-        ld06.add_buffer(buffer);
+        ld06.add_buffer(buffer, 47);
     });
 
     digitalWrite(LED_RED, LOW);
@@ -60,19 +60,21 @@ void loop() {
         auto scan_res = *res;
 
         if (scan_res) {
-            logger.printf("Stamp: %u\n", scan_res.scan.timestamp);
+            logger.printf("Start angle: %hu\n", (uint16_t) scan_res.scan.start_angle);
 
             for (int i = 0; i < 12; i++) {
-                //logger.printf("Range: %u\n", scan_res.scan.data[i].dist);
+                logger.printf("Range: %hu\n", scan_res.scan.data[i].dist);
             }
+
+            logger.printf("End angle: %hu\n", (uint16_t) scan_res.scan.end_angle);
         } else {
             switch (scan_res.error) {
                 case ScanResult::Error::CRCFail:
-                    logger.print("CRC error!\n");
+                    logger.printf("CRC error!\n");
                     break;
 
                 case ScanResult::Error::HeaderByteWrong:
-                    logger.print("Header byte wrong!\n");
+                    logger.printf("Header byte wrong!\n");
                     break;
             }
         }
