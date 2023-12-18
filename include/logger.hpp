@@ -56,14 +56,11 @@ public:
         char buffer[128];
         auto len = vsprintf(buffer, format, argv);
 
-        // Copy to heap
-        auto str = String{buffer};
-
-        // Add to buffer, and start transmit train if nothing is being transmitted
+        // Add to queue, and start transmit train if nothing is being transmitted
         noInterrupts();
         // Arbitrarily bound queue
         if (buff.size() < 128) {
-            buff.push_back(str);
+            buff.emplace_back(buffer);
             erred = true;
         }
 
