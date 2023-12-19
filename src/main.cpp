@@ -5,7 +5,7 @@
 #include "dma.hpp"
 #include "logger.hpp"
 #include "pure_pursuit.hpp"
-#include "naive_gap_follow.hpp"
+#include "f1tenth_gap_follow.hpp"
 
 // Robot control
 TinyKart *tinyKart;
@@ -79,7 +79,7 @@ void loop() {
                 }
 
                 // Find target point
-                auto maybe_target_pt = gap_follow::find_gap_naive(scan, 40, 1.0);
+                auto maybe_target_pt = gap_follow::find_gap_bubble(scan, 1.0);
 
                 if (maybe_target_pt) {
                     auto target_pt = *maybe_target_pt;
