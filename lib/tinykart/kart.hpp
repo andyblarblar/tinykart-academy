@@ -17,15 +17,19 @@ class TinyKart {
     float wheelbase;
     /// Max steering angle in degrees, symmetrical
     float max_steering;
+    /// Percent to cap speed to
+    float speed_cap;
 
 public:
     /// Prepare the kart for motion. toggle_pause must be called before we can move
     explicit TinyKart(int servo_pin,
                       const ESC &esc,
+                      float speed_cap,
                       float wheelbase = 0.335,
                       float max_steering = 24.0) : esc(esc),
                                                    wheelbase(wheelbase),
-                                                   max_steering(max_steering) {
+                                                   max_steering(max_steering),
+                                                   speed_cap(speed_cap) {
         // Prime actuators
         servo.attach(servo_pin, 0, 4096, map(50, 0, 4092, 0, 100));
         this->set_steering(0);
@@ -47,6 +51,8 @@ public:
             return;
         }
 
+        power = std::max(power, speed_cap);
+
         this->esc.set_forward(power);
     }
 
@@ -56,6 +62,8 @@ public:
             this->set_neutral();
             return;
         }
+
+        power = std::max(power, speed_cap);
 
         this->esc.set_reverse(power);
     }
@@ -79,11 +87,16 @@ public:
         this->estopped = !this->estopped;
     }
 
+    /// Stops all kart actuations.
     void pause() {
         this->set_steering(0);
         this->set_neutral();
 
         this->estopped = true;
+    }
+
+    void unpause() {
+        this->estopped = false;
     }
 
     /// Kart wheelbase in meters.

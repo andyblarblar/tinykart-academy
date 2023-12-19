@@ -43,7 +43,7 @@ void setup() {
 
     // Prepare kart for motion
     ESC esc{THROTTLE_PIN, PWM_MAX_DUTY, PWM_FREQ};
-    tinyKart = new TinyKart{STEERING_PIN, esc};
+    tinyKart = new TinyKart{STEERING_PIN, esc, 0.3}; //TODO change speed cap
 
     // Init DMA and UART for LiDAR
     dmaSerialRx5.begin(230'400, [&](volatile LD06Buffer buffer) {
