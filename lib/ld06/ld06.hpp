@@ -44,7 +44,7 @@ struct LD06Frame {
         assert(reading_idx < 12);
         auto angle = start_angle + get_step() * float(reading_idx);
 
-        if (angle > -360.0) {
+        if (angle > 360.0) {
             angle -= 360.0;
         }
         return angle;
@@ -97,11 +97,15 @@ struct ScanResult {
 /// should be copied over to the driver via add_buffer. Finally, get_scan can be called to see if a scan has been read
 /// and checked.
 class LD06 {
+    /// Primary buffer
     uint8_t current_scan[47]{};
     int8_t left_in_current_scan = 47;
+
+    /// Double buffer used when primary buffer overflows
     uint8_t next_scan[47]{};
     int8_t left_in_next_scan = 47;
 
+    /// Converts scan buffer into struct
     ScanResult process_buffer();
 
 public:
@@ -138,8 +142,11 @@ struct ScanPoint {
 
 /// Filters individual scan frames into larger regions.
 class ScanBuilder {
+    /// Start angle of desired area
     float start;
+    /// End angle of desired area
     float end;
+
     std::vector<ScanPoint> buffer{};
     bool last_scan_in_bounds = false;
 
@@ -170,6 +177,9 @@ public:
 
             // Convert points to cartiesian points
             for (int i = 0; i < 12; ++i) {
+                // Skip points that are outside the scan, but some in the frame are
+                if (!scan_in_range(frame.get_angle_of_reading(i), frame.get_angle_of_reading(i))) continue;
+
                 auto [range, angle] = frame.get_range_in_polar(i);
                 float radian_angle = angle * (float(M_PI) / 180);
 
@@ -183,12 +193,25 @@ public:
         else if (last_scan_in_bounds) {
             last_scan_in_bounds = false;
 
-            std::vector<ScanPoint> out{buffer};
-            buffer.clear();
-
-            return std::move(out);
+            return std::move(buffer);
         }
 
         return std::nullopt;
+    }
+
+    /// Gets the step of a scan created by this class
+    [[nodiscard]] float get_step(const std::vector<ScanPoint> &scan) const {
+        auto diff = (uint32_t(end * 100.0) + 36000 - uint32_t(start * 100.0)) % 36000;
+        return float(diff / (scan.size() - 1)) / 100.0f;
+    }
+
+    /// Gets the angle of a scan produced by this class
+    [[nodiscard]] float get_angle_of_reading(const std::vector<ScanPoint> &scan, uint8_t reading_idx) const {
+        auto angle = start + get_step(scan) * float(reading_idx);
+
+        if (angle > 360.0) {
+            angle -= 360.0;
+        }
+        return angle;
     }
 };

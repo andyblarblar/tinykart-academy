@@ -59,26 +59,30 @@ void loop() {
     auto res = ld06.get_scan();
     interrupts();
 
+    // Check if we have a scan frame
     if (res) {
         auto scan_res = *res;
 
+        // Check if frame erred
         if (scan_res) {
             auto maybe_scan = scan_builder.add_frame(scan_res.scan);
 
+            // Check if we have a 180 degree scan built
             if (maybe_scan) {
                 auto scan = *maybe_scan;
 
+                // If object is 10cm in front of kart, stop
+                if (scan[scan.size() / 2].dist(ScanPoint{0, 0}) < 100) {
+                    tinyKart->pause();
+                    digitalWrite(LED_YELLOW, HIGH);
+                }
+
+                // TODO remove, this is just to test LiDAR is connected
                 logger.printf("*****START SCAN******\n");
                 for (auto &pt: scan) {
                     logger.printf("Point: (%hu,%hu)\n", (uint16_t) pt.x, (uint16_t) pt.y);
                 }
                 logger.printf("*****END SCAN******\n\n");
-
-                // If object is 10cm in front of kart, stop TODO move this into auton or cleanup
-                if (scan[scan.size() / 2].dist(ScanPoint{0, 0}) < 100) {
-                    tinyKart->pause();
-                    digitalWrite(LED_YELLOW, HIGH);
-                }
 
                 // TODO add auton here
             }
