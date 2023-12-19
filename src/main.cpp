@@ -5,6 +5,7 @@
 #include "ld06.hpp"
 #include "dma.hpp"
 #include "logger.hpp"
+#include "pure_pursuit.hpp"
 
 // Robot control
 TinyKart *tinyKart;
@@ -72,7 +73,7 @@ void loop() {
                 auto scan = *maybe_scan;
 
                 // If object is 10cm in front of kart, stop
-                if (scan[scan.size() / 2].dist(ScanPoint{0, 0}) < 100) {
+                if (scan[scan.size() / 2].dist(ScanPoint::zero()) < 0.1) {
                     tinyKart->pause();
                     digitalWrite(LED_YELLOW, HIGH);
                 }
@@ -80,7 +81,7 @@ void loop() {
                 // TODO remove, this is just to test LiDAR is connected
                 logger.printf("*****START SCAN******\n");
                 for (auto &pt: scan) {
-                    logger.printf("Point: (%hu,%hu)\n", (uint16_t) pt.x, (uint16_t) pt.y);
+                    logger.printf("Point: (%hu,%hu)\n", (uint16_t) (pt.x * 1000.0f), (uint16_t) (pt.y * 1000.0f));
                 }
                 logger.printf("*****END SCAN******\n\n");
 
