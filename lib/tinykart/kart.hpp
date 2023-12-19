@@ -67,7 +67,7 @@ public:
         if (this->estopped) return;
 
         // Max steering is 24 degrees, map to servo 0-180 degrees
-        auto servo_angle = mapfloat(angle, -24.0, 24.0, 0, 180);
+        auto servo_angle = mapfloat(angle, -get_max_steering(), get_max_steering(), 0, 180);
         servo.write(int(servo_angle));
     }
 
