@@ -129,14 +129,18 @@ public:
 };
 
 struct ScanPoint {
-    /// Forward axis (mm)
+    /// Forward axis (m)
     float x;
-    /// Left positive axis (mm)
+    /// Left positive axis (m)
     float y;
 
-    /// Distance in mm between two points
+    /// Distance in m between two points
     [[nodiscard]] float dist(const ScanPoint &other) const {
         return std::hypot(x - other.x, y - other.y);
+    }
+
+    static ScanPoint zero() {
+        return ScanPoint{0, 0};
     }
 };
 
@@ -186,7 +190,14 @@ public:
                 float x = range * sinf(radian_angle);
                 float y = -(range * cosf(radian_angle));
 
-                buffer.push_back(ScanPoint{x, y});
+                // Read noisy points as 0, which is what unreadable points are also received as
+                if (frame.data[i].confidence < 150) {
+                    x = 0;
+                    y = 0;
+                }
+
+                // Convert from mm to m
+                buffer.push_back(ScanPoint{x / 1000.0f, y / 1000.0f});
             }
         }
             // Full scan area covered

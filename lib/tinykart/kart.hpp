@@ -13,9 +13,27 @@ class TinyKart {
     ESC esc;
     bool estopped;
 
+    /// Kart wheelbase in meters
+    float wheelbase;
+    /// Max steering angle in degrees, symmetrical
+    float max_steering;
+    /// Percent to cap speed to
+    float speed_cap;
+    /// Biases the steering (trim)
+    float steering_bias;
+
 public:
     /// Prepare the kart for motion. toggle_pause must be called before we can move
-    explicit TinyKart(int servo_pin, const ESC &esc) : esc(esc) {
+    explicit TinyKart(int servo_pin,
+                      const ESC &esc,
+                      float speed_cap,
+                      float steering_bias = 0.0,
+                      float wheelbase = 0.335,
+                      float max_steering = 24.0) : esc(esc),
+                                                   wheelbase(wheelbase),
+                                                   max_steering(max_steering),
+                                                   speed_cap(speed_cap),
+                                                   steering_bias(steering_bias) {
         // Prime actuators
         servo.attach(servo_pin, 0, 4096, map(50, 0, 4092, 0, 100));
         this->set_steering(0);
@@ -37,6 +55,8 @@ public:
             return;
         }
 
+        power = std::clamp(power, 0.0f, speed_cap);
+
         this->esc.set_forward(power);
     }
 
@@ -46,6 +66,8 @@ public:
             this->set_neutral();
             return;
         }
+
+        power = std::clamp(power, 0.0f, speed_cap);
 
         this->esc.set_reverse(power);
     }
@@ -57,7 +79,7 @@ public:
         if (this->estopped) return;
 
         // Max steering is 24 degrees, map to servo 0-180 degrees
-        auto servo_angle = mapfloat(angle, -24.0, 24.0, 0, 180);
+        auto servo_angle = mapfloat(angle + steering_bias, -get_max_steering(), get_max_steering(), 199, 0);
         servo.write(int(servo_angle));
     }
 
@@ -69,10 +91,25 @@ public:
         this->estopped = !this->estopped;
     }
 
+    /// Stops all kart actuations.
     void pause() {
         this->set_steering(0);
         this->set_neutral();
 
         this->estopped = true;
+    }
+
+    void unpause() {
+        this->estopped = false;
+    }
+
+    /// Kart wheelbase in meters.
+    [[nodiscard]] float get_wheelbase() const {
+        return this->wheelbase;
+    }
+
+    /// Max steering angle in degrees, symmetrical
+    [[nodiscard]] float get_max_steering() const {
+        return this->max_steering;
     }
 };

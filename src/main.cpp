@@ -1,10 +1,12 @@
 #include <Arduino.h>
 #include "pins.hpp"
-#include "esc.hpp"
 #include "kart.hpp"
 #include "ld06.hpp"
 #include "dma.hpp"
 #include "logger.hpp"
+#include "pure_pursuit.hpp"
+#include "f1tenth_gap_follow.hpp"
+#include "naive_gap_follow.hpp"
 
 // Robot control
 TinyKart *tinyKart;
@@ -42,7 +44,7 @@ void setup() {
 
     // Prepare kart for motion
     ESC esc{THROTTLE_PIN, PWM_MAX_DUTY, PWM_FREQ};
-    tinyKart = new TinyKart{STEERING_PIN, esc};
+    tinyKart = new TinyKart{STEERING_PIN, esc, 0.3, 4.5};
 
     // Init DMA and UART for LiDAR
     dmaSerialRx5.begin(230'400, [&](volatile LD06Buffer buffer) {
@@ -71,20 +73,33 @@ void loop() {
             if (maybe_scan) {
                 auto scan = *maybe_scan;
 
-                // If object is 10cm in front of kart, stop
-                if (scan[scan.size() / 2].dist(ScanPoint{0, 0}) < 100) {
+                auto front_obj_dist = scan[scan.size() / 2].dist(ScanPoint::zero());
+
+                // If object is 45cm in front of kart, stop (0.0 means bad point)
+                if (front_obj_dist != 0.0 && front_obj_dist < 0.45) {
                     tinyKart->pause();
                     digitalWrite(LED_YELLOW, HIGH);
                 }
 
-                // TODO remove, this is just to test LiDAR is connected
-                logger.printf("*****START SCAN******\n");
-                for (auto &pt: scan) {
-                    logger.printf("Point: (%hu,%hu)\n", (uint16_t) pt.x, (uint16_t) pt.y);
-                }
-                logger.printf("*****END SCAN******\n\n");
+                // Find target point
+                auto maybe_target_pt = gap_follow::find_gap_naive(scan, 20, 2.0);
 
-                // TODO add auton here
+                if (maybe_target_pt) {
+                    auto target_pt = *maybe_target_pt;
+
+                    logger.printf("Target point: (%hi,%hi)\n", (int16_t) (target_pt.x * 1000),
+                                  (int16_t) (target_pt.y * 1000));
+
+                    // Find command to drive to point
+                    auto command = pure_pursuit::calculate_command_to_point(tinyKart, target_pt);
+
+                    logger.printf("Command: throttle %hu, angle %hi\n", (uint16_t) (command.throttle_percent * 100),
+                                  (int16_t) (command.steering_angle));
+
+                    // Actuate kart
+                    tinyKart->set_forward(command.throttle_percent);
+                    tinyKart->set_steering(command.steering_angle);
+                }
             }
         } else {
             switch (scan_res.error) {
