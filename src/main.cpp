@@ -6,6 +6,7 @@
 #include "logger.hpp"
 #include "pure_pursuit.hpp"
 #include "f1tenth_gap_follow.hpp"
+#include "naive_gap_follow.hpp"
 
 // Robot control
 TinyKart *tinyKart;
@@ -43,7 +44,7 @@ void setup() {
 
     // Prepare kart for motion
     ESC esc{THROTTLE_PIN, PWM_MAX_DUTY, PWM_FREQ};
-    tinyKart = new TinyKart{STEERING_PIN, esc, 0.3}; //TODO change speed cap
+    tinyKart = new TinyKart{STEERING_PIN, esc, 0.3, 4.5};
 
     // Init DMA and UART for LiDAR
     dmaSerialRx5.begin(230'400, [&](volatile LD06Buffer buffer) {
@@ -72,14 +73,16 @@ void loop() {
             if (maybe_scan) {
                 auto scan = *maybe_scan;
 
-                // If object is 10cm in front of kart, stop
-                if (scan[scan.size() / 2].dist(ScanPoint::zero()) < 0.1) {
+                auto front_obj_dist = scan[scan.size() / 2].dist(ScanPoint::zero());
+
+                // If object is 45cm in front of kart, stop (0.0 means bad point)
+                if (front_obj_dist != 0.0 && front_obj_dist < 0.45) {
                     tinyKart->pause();
                     digitalWrite(LED_YELLOW, HIGH);
                 }
 
                 // Find target point
-                auto maybe_target_pt = gap_follow::find_gap_bubble(scan, 1.0);
+                auto maybe_target_pt = gap_follow::find_gap_naive(scan, 20, 2.0);
 
                 if (maybe_target_pt) {
                     auto target_pt = *maybe_target_pt;

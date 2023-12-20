@@ -190,6 +190,12 @@ public:
                 float x = range * sinf(radian_angle);
                 float y = -(range * cosf(radian_angle));
 
+                // Read noisy points as 0, which is what unreadable points are also received as
+                if (frame.data[i].confidence < 150) {
+                    x = 0;
+                    y = 0;
+                }
+
                 // Convert from mm to m
                 buffer.push_back(ScanPoint{x / 1000.0f, y / 1000.0f});
             }
