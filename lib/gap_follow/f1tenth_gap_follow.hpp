@@ -7,7 +7,8 @@ namespace gap_follow {
     ///
     /// \param scan Lidar scan
     /// \param bubble_radius Radius in meters around the closest scan point to remove points in, creating a gap
+    /// \param use_farthest Chooses the farthest point in the gap for target point if true. Else, uses midpoint
     /// \return Target point to drive to, if a gap is found
     std::optional<ScanPoint>
-    find_gap_bubble(const std::vector<ScanPoint> &scan, float bubble_radius);
+    find_gap_bubble(std::vector<ScanPoint> scan, float bubble_radius, bool use_farthest = true);
 }

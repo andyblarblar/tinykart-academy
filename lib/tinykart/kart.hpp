@@ -112,4 +112,9 @@ public:
     [[nodiscard]] float get_max_steering() const {
         return this->max_steering;
     }
+
+    /// Percent to cap speed to
+    [[nodiscard]] float get_speed_cap() const {
+        return this->speed_cap;
+    }
 };

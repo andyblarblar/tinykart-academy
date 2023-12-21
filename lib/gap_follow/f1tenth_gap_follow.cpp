@@ -3,26 +3,24 @@
 #include "queue"
 #include "algorithm"
 
-std::optional<ScanPoint> gap_follow::find_gap_bubble(const std::vector<ScanPoint> &scan, float bubble_radius) {
-    // Copy scan to allow mutation
-    std::vector<ScanPoint> local_scan{scan};
-
+std::optional<ScanPoint>
+gap_follow::find_gap_bubble(std::vector<ScanPoint> scan, float bubble_radius, bool use_farthest) {
     // Find the closest point
-    auto closest_pt = *std::min_element(local_scan.begin(), local_scan.end(),
+    auto closest_pt = *std::min_element(scan.begin(), scan.end(),
                                         [](const ScanPoint &lhs, const ScanPoint &rhs) {
                                             return lhs.dist(ScanPoint::zero()) < rhs.dist(ScanPoint::zero());
                                         });
 
     // Find all points in bubble around closest point
     std::vector<uint32_t> zero_idxs{};
-    for (uint32_t i = 0; i < local_scan.size(); ++i) {
-        if (closest_pt.dist(local_scan[i]) < bubble_radius) {
+    for (uint32_t i = 0; i < scan.size(); ++i) {
+        if (closest_pt.dist(scan[i]) < bubble_radius) {
             zero_idxs.push_back(i);
         }
     }
     // Zero points in the bubble
     for (uint32_t idx: zero_idxs) {
-        local_scan[idx] = ScanPoint::zero();
+        scan[idx] = ScanPoint::zero();
     }
 
     std::priority_queue<Gap> gaps{};
@@ -30,8 +28,8 @@ std::optional<ScanPoint> gap_follow::find_gap_bubble(const std::vector<ScanPoint
     std::optional<uint32_t> current_gap_start;
 
     // Find gaps (consecutive non zero points)
-    for (uint32_t i = 0; i < local_scan.size(); ++i) {
-        bool zeroed = local_scan[i].x == 0 && local_scan[i].y == 0;
+    for (uint32_t i = 0; i < scan.size(); ++i) {
+        bool zeroed = scan[i].x == 0 && scan[i].y == 0;
 
         // If point is part of gap
         if (!zeroed) {
@@ -54,15 +52,26 @@ std::optional<ScanPoint> gap_follow::find_gap_bubble(const std::vector<ScanPoint
 
     // Handle gap on the far right of the scan
     if (current_gap_len > 0) {
-        gaps.emplace(*current_gap_start, local_scan.size() - 1);
+        gaps.emplace(*current_gap_start, scan.size() - 1);
     }
 
     if (!gaps.empty()) {
-        // Set middle index of our biggest gap as the target point
         auto biggest_gap = gaps.top();
-        uint32_t middle_idx = biggest_gap.middle_idx();
 
-        return scan[middle_idx];
+        // Choose the farthest point as the target
+        if (use_farthest) {
+            auto farthest_point = *std::max_element(scan.begin() + (int) biggest_gap.start_idx,
+                                                    scan.begin() + (int) biggest_gap.end_idx,
+                                                    [](const ScanPoint &lhs, const ScanPoint &rhs) {
+                                                        return lhs.dist(ScanPoint::zero()) < rhs.dist(ScanPoint::zero());
+                                                    });
+
+            return farthest_point;
+        } else {
+            // Else use center of gap
+            return scan[biggest_gap.middle_idx()];
+        }
+
     } else {
         return std::nullopt;
     }

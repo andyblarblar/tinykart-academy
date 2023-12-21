@@ -151,6 +151,9 @@ class ScanBuilder {
     /// End angle of desired area
     float end;
 
+    /// Constant offset to apply to all scans
+    ScanPoint lidar_offset;
+
     std::vector<ScanPoint> buffer{};
     bool last_scan_in_bounds = false;
 
@@ -171,7 +174,12 @@ public:
     /// Creates filter. Angles are in degrees, where 360 is forwards.
     /// \param start Start angle of filtered area
     /// \param end End angle of filtered area
-    explicit ScanBuilder(float start, float end) : start(start), end(end) {};
+    /// \param lidar_offset Constant offset to apply to all scan points
+    explicit ScanBuilder(float start,
+                         float end,
+                         const ScanPoint &lidar_offset = ScanPoint{0, 0}) : start(start),
+                                                                            end(end),
+                                                                            lidar_offset(lidar_offset) {};
 
     /// Adds a frame to the scan builder
     std::optional<std::vector<ScanPoint>> add_frame(const LD06Frame &frame) {
@@ -197,7 +205,14 @@ public:
                 }
 
                 // Convert from mm to m
-                buffer.push_back(ScanPoint{x / 1000.0f, y / 1000.0f});
+                x /= 1000;
+                y /= 1000;
+
+                // Apply lidar offset
+                x += lidar_offset.x;
+                y += lidar_offset.y;
+
+                buffer.push_back(ScanPoint{x, y});
             }
         }
             // Full scan area covered

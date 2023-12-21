@@ -15,7 +15,7 @@ TinyKart *tinyKart;
 LD06 ld06{};
 
 // Scan processor
-ScanBuilder scan_builder{360 - 90, 90};
+ScanBuilder scan_builder{360 - 90, 90, ScanPoint{0.1524, 0}};
 
 /// Starts/stops the kart
 void estop() {
@@ -76,13 +76,13 @@ void loop() {
                 auto front_obj_dist = scan[scan.size() / 2].dist(ScanPoint::zero());
 
                 // If object is 45cm in front of kart, stop (0.0 means bad point)
-                if (front_obj_dist != 0.0 && front_obj_dist < 0.45) {
+                if (front_obj_dist != 0.0 && front_obj_dist < 0.45 + 0.1524) {
                     tinyKart->pause();
                     digitalWrite(LED_YELLOW, HIGH);
                 }
 
                 // Find target point
-                auto maybe_target_pt = gap_follow::find_gap_naive(scan, 20, 2.0);
+                auto maybe_target_pt = gap_follow::find_gap_bubble(scan, 1.0);
 
                 if (maybe_target_pt) {
                     auto target_pt = *maybe_target_pt;
@@ -91,7 +91,10 @@ void loop() {
                                   (int16_t) (target_pt.y * 1000));
 
                     // Find command to drive to point
-                    auto command = pure_pursuit::calculate_command_to_point(tinyKart, target_pt);
+                    auto command = pure_pursuit::calculate_command_to_point(tinyKart, target_pt, 1.0);
+
+                    // Set throttle proportional to distance to point in front of kart
+                    command.throttle_percent = mapfloat(front_obj_dist, 0.1, 10.0, 0.15, tinyKart->get_speed_cap());
 
                     logger.printf("Command: throttle %hu, angle %hi\n", (uint16_t) (command.throttle_percent * 100),
                                   (int16_t) (command.steering_angle));

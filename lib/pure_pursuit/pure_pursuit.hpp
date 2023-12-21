@@ -2,6 +2,7 @@
 
 #include "kart.hpp"
 #include "ld06.hpp"
+#include "logger.hpp"
 
 struct AckermannCommand {
     float throttle_percent;
@@ -11,7 +12,23 @@ struct AckermannCommand {
 
 namespace pure_pursuit {
     /// Calculates the command to move the kart to some target point.
-    inline AckermannCommand calculate_command_to_point(const TinyKart *tinyKart, const ScanPoint &target_point) {
+    inline AckermannCommand calculate_command_to_point(const TinyKart *tinyKart, ScanPoint target_point,
+                                                       float max_lookahead) {
+
+        // Cap point to max lookahead
+        if (auto target_dist = target_point.dist(ScanPoint::zero()); target_dist > max_lookahead) {
+            auto angle = atan2f(target_point.y, target_point.x);
+
+            auto new_y = sin(angle) * max_lookahead;
+            auto new_x = cos(angle) * max_lookahead;
+
+            target_point.x = new_x;
+            target_point.y = new_y;
+
+            logger.printf("Capping to actual lookahead of: (%hi, %hi)\n", (int16_t) (target_point.x * 1000),
+                          (int16_t) (target_point.y * 1000));
+        }
+
         AckermannCommand command{};
 
         // Calculate the angle between the robot and the goal
