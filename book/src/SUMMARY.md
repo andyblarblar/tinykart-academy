@@ -6,7 +6,7 @@
     - [PlatformIO](./installation_pio.md)
     - [Git](./installation_git.md)
     - [Setup](./code_setup.md)
-- [Chapter 2: Software Overview](./soft_overview)
+- [Chapter 2: Software Overview](./soft_overview.md)
 - [Chapter 3: The Baby Lidar](./lidar.md)
 - [Chapter 4: The TinyKart](./kart.md)
 - [Chapter 5: The Self Driving Part](./auton_intro.md)
