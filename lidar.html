@@ -1,0 +1,502 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Chapter 3: The Baby Lidar - the tinykart book</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="bom.html"><strong aria-hidden="true">2.</strong> Hardware BOM and Overview</a></li><li class="chapter-item expanded "><a href="installation.html"><strong aria-hidden="true">3.</strong> Chapter 1: Installation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="installation_pio.html"><strong aria-hidden="true">3.1.</strong> PlatformIO</a></li><li class="chapter-item expanded "><a href="installation_git.html"><strong aria-hidden="true">3.2.</strong> Git</a></li><li class="chapter-item expanded "><a href="code_setup.html"><strong aria-hidden="true">3.3.</strong> Setup</a></li></ol></li><li class="chapter-item expanded "><a href="soft_overview.html"><strong aria-hidden="true">4.</strong> Chapter 2: Software Overview</a></li><li class="chapter-item expanded "><a href="lidar.html" class="active"><strong aria-hidden="true">5.</strong> Chapter 3: The Baby Lidar</a></li><li class="chapter-item expanded "><a href="kart.html"><strong aria-hidden="true">6.</strong> Chapter 4: The TinyKart</a></li><li class="chapter-item expanded "><a href="auton_intro.html"><strong aria-hidden="true">7.</strong> Chapter 5: The Self Driving Part</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="auton_gap.html"><strong aria-hidden="true">7.1.</strong> Pt.1: Follow the Gap</a></li><li class="chapter-item expanded "><a href="auton_pp.html"><strong aria-hidden="true">7.2.</strong> Pt.2: Pure Pursuit</a></li></ol></li><li class="chapter-item expanded "><a href="onwards.html"><strong aria-hidden="true">8.</strong> Chapter 6: Onwards</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">the tinykart book</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="the-baby-lidar-"><a class="header" href="#the-baby-lidar-">The Baby Lidar ☺</a></h1>
+<p>It's finally time to play with our first piece of hardware!</p>
+<p>I would like to introduce the LD06, AKA Baby LiDAR!</p>
+<img src="assets/lidar.jpg"/>
+<h2 id="lidars"><a class="header" href="#lidars">LiDARs</a></h2>
+<p>So why do we even have a LiDAR? Well, LiDARs provide a means to get a slice of the world around you as distance data.
+This is extremely useful for mobile robots, since there really isn't another sensor that can give the same field of view
+as a LiDAR.</p>
+<p>Generally speaking, there are two kinds of LiDAR, 2d and 3d. 3d LiDARs get distance values with both a vertical and
+horizontal angle. 2d LiDARs, like the LD06, only get distance values from a flat plane. This makes them far less
+versatile in the real world, but significantly easier to work with and cheaper.</p>
+<p>To get a mental model of how a LiDAR works, think of a laser rangefinder, such as those used in golf. You point it at
+something, and it gives a distance reading at some frequency. Now think about what happens if we put that rangefinder
+on a spinning motor. as the motor spins the rangefinder, the rangefinder will read a different location each time,
+with a density of points proportional to is frequency. Given a high enough frequency, this readout will give you a
+2d slice of the world around you as polar coordinates.</p>
+<p>For a visualization, take a look at this diagram from the LD06 user manual:</p>
+<img src="assets/scan.png"/>
+<p>Like all sensors, LiDAR has operating limits. For LiDARs, these limits are generally its frequency and range.
+Unsurprisingly,
+the LD06 is pretty bad at both, reading at 10Hz with a max range of 8-10m. This means that care needs to be taken to
+avoid outpacing the speed of the LiDAR itself.</p>
+<h2 id="uart"><a class="header" href="#uart">UART</a></h2>
+<p>The LD06 of course needs to connect to our board somehow. While industrial LiDARs generally use Ethernet for this
+purpose,
+our little baby lidar uses UART. UART, or RS232 (kinda, I'm not opening that debate) is a very simple protocol for
+communication between embedded processors. While I won't get super into the weeds with how UART is implemented, think of
+it as a very minimal layer over the idea of sending data over a wire as binary via high and low signals. In hardware,
+UART is implemented (In most modern uses) as simply two or even just one wire, like so:</p>
+<img src="https://cdn.rohde-schwarz.com/pws/solution/research___education_1/educational_resources_/oscilloscope_and_probe_fundamentals/05_Understanding-UART_01_w1280_hX.png"/>
+<p>UART is
+an asynchronous protocol, that is, it does not have a clock line. This means that without prior configuration, the
+receiver would have no way of knowing how fast the sender plans to send high and low bits. For UART, we call this
+rate <strong>baud</strong>, measured in bits per second (effectively). This gives the advantage of removing the clock wire and thus
+requiring less hardware, at the expense of anguish if you configure your reciver to a different baud than the sender.</p>
+<p>Also worth noting is that UART has no link-layer error detection, so higher layer protocols using UART almost always
+include error detection methods such as Cyclical Redundancy Checks (CRCs) to ensure data integrity should there be
+electrical noise in the system.</p>
+<h2 id="connecting-baby-lidar"><a class="header" href="#connecting-baby-lidar">Connecting Baby Lidar</a></h2>
+<div class="warning">
+Be careful with the baby lidar! They scratch very easily, which may lower accuracy.
+</div>
+<p>Preamble aside, lets get the Baby connected. From the manual, the LD06 has the following pinout:</p>
+<img src="assets/pinout.png"/>
+<p>As you can see, the LiDAR actually only has a UART transmitter, which means we will only need a UART receiver (Rx) on
+the
+board side. The PWM input is unused, and the other two pins are simply power and ground.</p>
+<p>While there are a variety of ways to connect these to the board, TinyKart is configured to use the following pins:</p>
+<img src="assets/lidar_connect.png"/>
+<p>Go ahead and connect these to the respective pins on the wire connected to baby lidar. The end result should look
+something like this:</p>
+<img src="assets/lidar_connected.jpg"/>
+<div class="warning">
+Before you add power to the board, PLEASE double-check the ground and 5V pins. If these are swapped then the
+LiDAR could be damaged.
+</div>
+<p>With that being said, it's time to see the little guy come to life! Just plug in the board, and the LiDAR should spin to
+life!</p>
+<img src="assets/lidar_spin.gif"/>
+<h2 id="reading-baby-lidar"><a class="header" href="#reading-baby-lidar">Reading Baby Lidar</a></h2>
+<p>First off, we need to figure out how to actually read the UART line connected to the LiDAR. This can be done in one of
+two ways:</p>
+<ul>
+<li>Polling: Checking if a byte has been received in the arduino loop()</li>
+<li>Interrupts: Having hardware call an interrupt request handler (IRQ) function whenever a byte arrives</li>
+</ul>
+<p>Generally, polling is going to be slower but more convient, whereas interrupts require hardware support but allow for
+hardware to communicate in parallel with your programs' execution.</p>
+<p>By default, Arduino essentially only allows for polling, as it uses the IRQ itself behind the scenes. This unfortunately
+is actually too slow for how fast the LiDAR runs, so we have to make our own approach using interrupts. This is actually
+quite complex and delves into STM HAL code, so the code won't be discussed here (if you're curious, check the dma.cpp
+file).</p>
+<p>The LD06 sends its data in frames with the following format:</p>
+<img src="assets/lidar_format.png"/>
+<p>As you can see, each frame from the lidar will be 47 bytes, and contain data between some start and end angle. Notice
+how
+all data is in large integer values. This is because sending floats over the wire is quite inefficient, so we simply
+scale
+up the values and use ints instead. The LSB and MSB refers to least and most significant bit respectively. This
+indicates
+the endiness of the data, or the ordering of each byte in multibyte structures. For example, if <code>0x270F</code>(9999 decimal)
+is
+sent over this UART protocol, then it will actually be read and sent as <code>0x0F27</code>. While this seems insane, this is
+actually
+how the ARM processor on the board <em>already</em> stores the ints. So by doing this, we can do simple C pointer magic to read
+the two bytes as a 16-bit integer:</p>
+<pre><code class="language-c++">    packet.radar_speed = *reinterpret_cast&lt;uint16_t *&gt;(current_scan + 2);
+</code></pre>
+<p>With all this layed out, our approach looks like the following:</p>
+<ol>
+<li>LiDAR sends bytes over the UART</li>
+<li>UART peripheral triggers IRQ</li>
+<li>We copy a single byte to a buffer of bytes in RAM (literally just a uint8_t array)</li>
+<li>Repeat until we have 47 bytes</li>
+<li>Once we have 47 bytes, we need to figure out where the frame starts. To do this, we find the 0x54 start header. Align
+the buffer to now start at this byte.</li>
+<li>If that were to make us under 47 bytes, exit and wait for more</li>
+<li>Else, process the frame data into a C++ struct using the above pointer technique</li>
+</ol>
+<p>This approach is implemented in the ld06 driver provided for your use.</p>
+<h2 id="review"><a class="header" href="#review">Review</a></h2>
+<p>Alright, that was quite the infodump. Let's take a look at the code you'll be working with, and actually see what this
+looks like in action.</p>
+<p>Open main.cpp.</p>
+<p>On line 15 you'll see the creation of our driver:</p>
+<pre><code class="language-c++">LD06 ld06{};
+</code></pre>
+<p>Farther down in the setup, you'll see us configuring our callback to copy the buffer to the driver in the IRQ:</p>
+<pre><code class="language-c++">    // Init DMA and UART for LiDAR
+    dmaSerialRx5.begin(230'400, [&amp;](volatile LD06Buffer buffer) {
+        // On each packet received, copy over to driver.
+        ld06.add_buffer(buffer, 47);
+    });
+</code></pre>
+<p>Finally, we poll the driver to see if a scan has been processed in the loop:</p>
+<pre><code class="language-c++">    noInterrupts();
+    auto res = ld06.get_scan();
+    interrupts();
+</code></pre>
+<p>Interrupts are disabled around the LiDAR to avoid issues when a new buffer arrives and starts copying right as we read
+the previous buffer (known as a <em>race condition</em>).</p>
+<p>The processed scan frames have the following layout:</p>
+<pre><code class="language-c++">struct LD06Frame {
+    /// The rotational speed of the unit, in degrees per second.
+    uint16_t radar_speed;
+    /// The starting angle of this scan, in degrees.
+    float start_angle;
+    /// Distance readings.
+    Range data[12];
+    /// The ending angle of this scan, in degrees.
+    float end_angle;
+    /// The timestamp of this scan, in ms. This will roll over at 30000.
+    uint16_t timestamp;
+    /// The CRC check from the lidar.
+    uint8_t crc8;
+</code></pre>
+<p>Remember that each range is just a distance reading, which occurred at some angle. To retrieve this data,
+we must interpolate the index with the start and end angles:</p>
+<pre><code class="language-c++">    [[nodiscard]] float get_angle_of_reading(uint8_t reading_idx) const {
+        assert(reading_idx &lt; 12);
+        auto angle = start_angle + get_step() * float(reading_idx);
+
+        if (angle &gt; 360.0) {
+            angle -= 360.0;
+        }
+        return angle;
+    }
+</code></pre>
+<p>With this, we have all that we need to interpret frames from the LiDAR! Armed with this information,
+I recommend messing around with main.cpp to log data read by the board, and monitor the results by using the PIO
+monitor.</p>
+<h2 id="scan-building"><a class="header" href="#scan-building">Scan Building</a></h2>
+<p>Cool, so we can read frames. As it turns out, this actually isn't all that useful. This is because each frame actually
+only covers a very small region of the overall scan. This makes sending the LiDAR data much easier, but makes processing
+on our end a bit more complicated. To remedy this, we must assemble scans by hand, as we receive frames. During this
+process,
+we can also do other forms of filtering on the frames to make the data easier to work with. This is generally called
+<em>scan preprocessing</em>,
+and is done on actual industrial robots.</p>
+<p>Our approach:</p>
+<ol>
+<li>for each frame:
+<ol>
+<li>If frame is in the range we want to read
+<ol>
+<li>If reading is noisy, ignore it</li>
+<li>Convert each range to (x, y) coordinates about the lidar, from polar. Store this in a buffer.</li>
+</ol>
+</li>
+<li>else, if the last frame was in range, and thus our desired scan area is full, return the completed scan.</li>
+</ol>
+</li>
+</ol>
+<p>This is implemented in the ScanBuilder class:</p>
+<pre><code class="language-c++">    /// Adds a frame to the scan builder
+    std::optional&lt;std::vector&lt;ScanPoint&gt;&gt; add_frame(const LD06Frame &amp;frame) {
+        // Filter to in range
+        if (scan_in_range(frame.start_angle, frame.end_angle)) {
+            last_scan_in_bounds = true;
+
+            // Convert points to cartiesian points
+            for (int i = 0; i &lt; 12; ++i) {
+                // Skip points that are outside the scan, but some in the frame are
+                if (!scan_in_range(frame.get_angle_of_reading(i), frame.get_angle_of_reading(i))) continue;
+
+                auto [range, angle] = frame.get_range_in_polar(i);
+                float radian_angle = angle * (float(M_PI) / 180);
+
+                float x = range * sinf(radian_angle);
+                float y = -(range * cosf(radian_angle));
+
+                // Read noisy points as 0, which is what unreadable points are also received as
+                if (frame.data[i].confidence &lt; 150) {
+                    x = 0;
+                    y = 0;
+                }
+
+                // Convert from mm to m
+                x /= 1000;
+                y /= 1000;
+
+                // Apply lidar offset
+                x += lidar_offset.x;
+                y += lidar_offset.y;
+
+                buffer.push_back(ScanPoint{x, y});
+            }
+        }
+            // Full scan area covered
+        else if (last_scan_in_bounds) {
+            last_scan_in_bounds = false;
+
+            return std::move(buffer);
+        }
+
+        return std::nullopt;
+    }
+</code></pre>
+<p>In the tinykart default implementation, this is configured to read from -90 to 90 degrees:</p>
+<pre><code class="language-c++">ScanBuilder scan_builder{360 - 90, 90, ScanPoint{0.1524, 0}};
+</code></pre>
+<h2 id="putting-it-all-together"><a class="header" href="#putting-it-all-together">Putting it all together</a></h2>
+<p>Time for you to get your hands dirty! Before anything else, replace your loop with the one below:</p>
+<pre><code class="language-c++">void loop() {
+    noInterrupts();
+    auto res = ld06.get_scan();
+    interrupts();
+
+    // Check if we have a scan frame
+    if (res) {
+        auto scan_res = *res;
+
+        // Check if frame erred
+        if (scan_res) {
+            auto maybe_scan = scan_builder.add_frame(scan_res.scan);
+
+            // Check if we have a 180 degree scan built
+            if (maybe_scan) {
+                auto scan = *maybe_scan;
+                
+                logger.printf(&quot;*****START SCAN******\n&quot;);
+                for (auto &amp;pt: scan) {
+                    logger.printf(&quot;Point: (%hu,%hu)\n&quot;, (uint16_t) pt.x, (uint16_t) pt.y);
+                }
+                logger.printf(&quot;*****END SCAN******\n\n&quot;);
+            }
+        } else {
+            switch (scan_res.error) {
+                case ScanResult::Error::CRCFail:
+                    logger.printf(&quot;CRC error!\n&quot;);
+                    break;
+
+                case ScanResult::Error::HeaderByteWrong:
+                    logger.printf(&quot;Header byte wrong!\n&quot;);
+                    break;
+            }
+        }
+    }
+}
+</code></pre>
+<p>This code builds on the review section, and now also prints out completed scans, once they are built. Flash this to your
+board, and open the PIO monitor. You should see data blaze by.</p>
+<p>Try putting our hand around the LiDAR. You should see the values lower. Something to note about these cartisian
+coordinates
+is that they are in right-hand-rule. That is, x is positive forwards and y is positive to the left. This is the standard
+coordinate system in robotics.</p>
+<h3 id="homework"><a class="header" href="#homework">Homework</a></h3>
+<p>Now it's time for your challenge. Given the above code, create a program that prints &quot;GOTCHA!&quot; whenever someone
+is 50cm or less from the <em>back</em> of the LiDAR. This will only require modifying things in main.cpp, and only in loop and
+the globals. If you have any questions on units, formats etc., read the docs in the code! This is good practice for
+working
+on larger projects, since rarely will there be guides as verbose as this one to step through the code.</p>
+<p>Good luck!</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="soft_overview.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="kart.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="soft_overview.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="kart.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

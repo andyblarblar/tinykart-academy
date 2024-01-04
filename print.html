@@ -1,0 +1,1311 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>the tinykart book</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="bom.html"><strong aria-hidden="true">2.</strong> Hardware BOM and Overview</a></li><li class="chapter-item expanded "><a href="installation.html"><strong aria-hidden="true">3.</strong> Chapter 1: Installation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="installation_pio.html"><strong aria-hidden="true">3.1.</strong> PlatformIO</a></li><li class="chapter-item expanded "><a href="installation_git.html"><strong aria-hidden="true">3.2.</strong> Git</a></li><li class="chapter-item expanded "><a href="code_setup.html"><strong aria-hidden="true">3.3.</strong> Setup</a></li></ol></li><li class="chapter-item expanded "><a href="soft_overview.html"><strong aria-hidden="true">4.</strong> Chapter 2: Software Overview</a></li><li class="chapter-item expanded "><a href="lidar.html"><strong aria-hidden="true">5.</strong> Chapter 3: The Baby Lidar</a></li><li class="chapter-item expanded "><a href="kart.html"><strong aria-hidden="true">6.</strong> Chapter 4: The TinyKart</a></li><li class="chapter-item expanded "><a href="auton_intro.html"><strong aria-hidden="true">7.</strong> Chapter 5: The Self Driving Part</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="auton_gap.html"><strong aria-hidden="true">7.1.</strong> Pt.1: Follow the Gap</a></li><li class="chapter-item expanded "><a href="auton_pp.html"><strong aria-hidden="true">7.2.</strong> Pt.2: Pure Pursuit</a></li></ol></li><li class="chapter-item expanded "><a href="onwards.html"><strong aria-hidden="true">8.</strong> Chapter 6: Onwards</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">the tinykart book</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="introduction-to-the-tinykart-"><a class="header" href="#introduction-to-the-tinykart-">Introduction to <em>The TinyKart ™️</em></a></h1>
+<p>TODO introduce the idea of the project, its goals, and audience</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="hardware"><a class="header" href="#hardware">Hardware</a></h1>
+<p>TODO cover what hardware is required, and explain its role </p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
+<p>Before we can do anything cool, we're going to have to get the development environment setup. This guide should work on
+any operating system, but it will only be tested on Windows and Linux.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="platformio"><a class="header" href="#platformio">PlatformIO</a></h1>
+<p>First, let's install PlatformIO, which will include our IDE and build system. While this can be done in a few ways,
+we're going to be installing it via VScode, for sake of consistency. If you wish to use another IDE like CLion feel free
+to do so at your own risk.</p>
+<p>To begin, navigate to <a href="https://platformio.org/install/ide?install=vscode">the PIO website.</a></p>
+<p>You should see something like this:</p>
+<img src="assets/pio install.png"/>
+<p>You're going to want to follow these steps, using the links on the site. Once you have the extension installed, I would
+echo the guide in reccomending
+the <a href="https://docs.platformio.org/en/latest/integration/ide/vscode.html#quick-start">quick start</a>
+, which gives a very good overview of how to do the normal IDE motions.</p>
+<h3 id="testing-the-installation"><a class="header" href="#testing-the-installation">Testing the installation</a></h3>
+<p>Once you've got everything ready, try to open PIO home by clicking the little house:</p>
+<img src="https://docs.platformio.org/en/latest/_images/platformio-ide-vscode-welcome.png"/>
+<p>This should open the home page:</p>
+<img src="assets/pio%20home.png"/>
+<p>Click on the &quot;New Project&quot; button. This should bring up a modal to set up a new project. Name this project whatever,
+and select &quot;ST Nucleo H723ZG&quot; as the board. Finally, keep Arduino as the framework, and finish the setup.</p>
+<p>After some time processing, the editor should now open to a new Arduino project. On the file explorer on the left,
+select <code>src/main.cpp</code>:</p>
+<img src="assets/pio%20new%20project.png"/>
+<p>As you can see, the IDE has generated a same Arduino program, which should look quite familiar to anyone who has used
+the
+Arduino IDE before.</p>
+<p>As well, note the new icons on the bottom bar of the IDE, which represent various PIO commands (build, upload, etc):</p>
+<img src="assets/pio%20buttons.png"/>
+<p>to make sure things are set up correctly, click the check mark shown above, which executes the build command. This
+should
+open a new terminal which displays the compilation. If successful, it should look like this:</p>
+<img src="assets/pio%20build.png"/>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="git"><a class="header" href="#git">Git</a></h1>
+<p>Next, let's install Git, the ubiquitous version control system. If you're on Linux, this is likely already installed.
+If you're on Windows, you likely don't.</p>
+<h2 id="linux"><a class="header" href="#linux">Linux</a></h2>
+<p>For Linux users, it's best to install Git using a package manager, such as through apt on debain:
+<code>sudo apt install git</code></p>
+<p>If you aren't on a debian based distro, then lets be honest, you don't need me to explain how to install Git.</p>
+<h2 id="windows"><a class="header" href="#windows">Windows</a></h2>
+<p>For Windows users, run the Git installer from the project's <a href="https://git-scm.com">website</a>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="setup"><a class="header" href="#setup">Setup</a></h1>
+<p>Finally, lets set up the tinykart codebase now that everything else is installed.</p>
+<h2 id="clone"><a class="header" href="#clone">Clone</a></h2>
+<p>First, lets clone the tinykart codebase using Git. This will effectively copy code from GitHub and onto your local
+machine.</p>
+<p>To do so:</p>
+<ol>
+<li>Open a git bash terminal on Windows (you can find this via a start menu search), or a terminal on Linux</li>
+<li>Use the <code>cd</code> command to navigate to the directory you want to keep your code in. For
+example: <code>cd C:\users\andy\documents\code\</code> on Windows or
+<code>cd ~\Documents\code</code> on *nix.</li>
+<li>Clone the repo using: <code>git clone https://github.com/andyblarblar/tinykart-academy</code></li>
+<li>You should now see a folder called &quot;tinykart-academy&quot; which contains the codebase</li>
+</ol>
+<h2 id="flash"><a class="header" href="#flash">Flash</a></h2>
+<p>Next, lets flash the code onto the MCU, and actually see it running. To do this, we need to:</p>
+<ol>
+<li>Open the codebase in vscode</li>
+<li>Connect the MCU to the computer</li>
+<li>Flash using PIO</li>
+</ol>
+<h3 id="opening-codebase-in-vscode"><a class="header" href="#opening-codebase-in-vscode">Opening codebase in vscode</a></h3>
+<p>First, open vscode. This should open to the example project from earlier. To change to tinykart, go to the file tab, and
+select the &quot;open folder&quot; option, then open the tinykart folder:</p>
+<img src="assets/code open folder.png"/>
+<h3 id="connect-the-mcu"><a class="header" href="#connect-the-mcu">Connect the MCU</a></h3>
+<div class="warning">
+<p>Make sure that you <strong>never</strong> connect power to both of the USB ports at the same time, as this will kill the board.
+I have no idea why you would do this, but be warned.</p>
+</div>
+<p>The STM board we use has an integrated ST-Link debugger, which we can connect to over USB to flash the controller,
+debug, and more. To use this, connect a USB cable to the port <em>on the side opposite to the Ethernet jack</em>. If the port
+on the other side is used, then the debugger will not be attached.</p>
+<p>You'll know the debugger is correctly connected when the MCU pops up like a USB drive. <em>Make sure to mount this disk</em>.
+This is how PIO will know how to flash the controller.</p>
+<img src="assets/mount.png"/>
+<h3 id="flash-1"><a class="header" href="#flash-1">Flash</a></h3>
+<p>Finally, we can flash the code to the controller! This will involve compiling the code, creating the firmware file to
+flash to the controller, and actually programming the controller with that firmware. Thankfully, PIO makes this process
+trivial.</p>
+<p>To flash:</p>
+<ol>
+<li>Head back over to vscode. Find the folder icon at the bottom of the screen, next to the build icon from earlier:
+<img src="assets/pio%20buttons.png"/> This button manages the controller we are targeting with this flash.
+<ol>
+<li>Click this button, and select the nucleo_h7 option</li>
+</ol>
+</li>
+<li>Find the -&gt; button also on the bottom bar. This is the upload button, which will compile and then flash the
+controller.</li>
+<li>Click the upload button. This will open a new terminal displaying the compilation and flashing process. If
+compile errors occur, they can be viewed here. In this case however, there should be no issues, as the project
+contains only tested code.</li>
+</ol>
+<p>If this process has succeeded, a few things will occur:</p>
+<ul>
+<li>The terminal will display success</li>
+<li>The board will have a blinking red LED during the flashing process, and the drive will remount afterwards</li>
+<li>The red, green, and yellow user LEDs on the board will now indicate the state of the system.</li>
+</ul>
+<p>To show that it's working, click the blue user button on the board. This will toggle the yellow LED:</p>
+<img src="assets/led_blink.gif" style="width: 100%"/>
+<p>Congrats! You now have the tinykart software development environment setup. Before we dive in any further, I would
+recommend poking around the codebase and messing with the code. </p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="software-overview"><a class="header" href="#software-overview">Software Overview</a></h1>
+<p>Now that we have the codebase setup, let's briefly introduce what we're working with.</p>
+<h2 id="arduino"><a class="header" href="#arduino">Arduino</a></h2>
+<p>Tinykart's embedded software is based on Arduino. If you somehow haven't heard of it, Arduino is an extremely high level
+(as in simple) embedded programming framework. It's designed to allow for beginners and hobbyists to engage with
+embedded
+programming without spending a semester reading docs. If you've worked with Arduino before, you've probably worked with
+<em>the</em> Arduino, the UNO v3:</p>
+<img src="https://store.arduino.cc/cdn/shop/products/A000066_03.front_571x429.jpg?v=1629815860"/>
+<p>What most don't know is that Arduino is actually completely independent of the UNO, mega, and other &quot;Arduino&quot; branded
+dev-boards. In this respect, Arduino is simply a C++ library, similar to something like ROS.</p>
+<p>So how does this work then? Well, Arduino can be ported between boards using what are called &quot;Cores&quot;. Cores are
+basically
+just implementations of the Arduino API (think <code>writeDigital()</code>, <code>readAnalog()</code> etc.) using different, lower-level
+libraries specific to some board or vendor. This way, you can use Arduino the same way across boards, while the actual
+implementation is free to change (encapsulation, for those in SWE).</p>
+<p>Because we are using the STM32H723GZ, we will be using <a href="https://github.com/stm32duino/Arduino_Core_STM32">STM32duino</a>,
+an
+implementation of Arduino for STM32 MCU. This Arduino core is based on the STM32Cube HAL, something the more experienced
+among you may have seen before. While not required, this does mean that we can actually use the STM HAL <em>alongside</em>
+Arduino,
+something that is used considerably behind the scenes, although you won't need to touch it.</p>
+<p>So what do we have available to us?</p>
+<ul>
+<li>C++17</li>
+<li>The Arduino API</li>
+<li>The STM32 HAL</li>
+<li>The C standard library, via newlib</li>
+<li>The C++ standard library (or at least large portions of it), via newlib</li>
+</ul>
+<h2 id="platformio-1"><a class="header" href="#platformio-1">PlatformIO</a></h2>
+<p>PlatformIO is a build system and project configuration platform that works at a level above frameworks like Arduino or
+the HAL.
+While I won't get too far into the details here, PIO generally allows for embedded projects to be much more flexible by
+allowing
+the use of different tools like IDEs, while also providing a dependency manager similar to the Arduino IDE.</p>
+<p>One of the strongest features of PIO is its project structure, which allows for much more flexible projects than Arduino
+IDE. This section will describe how to navigate this project structure.</p>
+<p>As of the time of writing, the tinykart repo looks like this:</p>
+<pre><code>├── docs
+│   ├── io_setup.md
+│   ├── pinout.md
+│   ├── references.md
+│   └── refrence.pdf
+├── include
+│   ├── dma.hpp
+│   ├── logger.hpp
+│   ├── pins.hpp
+│   └── uart.hpp
+├── lib
+│   ├── gap_follow
+│   │   ├── common.hpp
+│   │   ├── f1tenth_gap_follow.cpp
+│   │   ├── f1tenth_gap_follow.hpp
+│   │   ├── naive_gap_follow.cpp
+│   │   └── naive_gap_follow.hpp
+│   ├── ld06
+│   │   ├── ld06.cpp
+│   │   └── ld06.hpp
+│   ├── pure_pursuit
+│   │   └── pure_pursuit.hpp
+│   ├── README
+│   └── tinykart
+│       ├── esc.hpp
+│       └── kart.hpp
+├── platformio.ini
+├── README.md
+├── src
+│   ├── dma.cpp
+│   ├── main.cpp
+│   └── stm32h7xx_hal_msp.c
+└── test
+    └── README
+</code></pre>
+<ul>
+<li><strong>docs</strong>: Contains documentation about the implementation of tinykart, and other useful references.</li>
+<li><strong>include</strong>: Contains all headers to be only used with tinykart.</li>
+<li><strong>lib</strong>: Contains all local libraries. Allows for us to extract code that could work outside of this tinykart
+implementation, making things more extensible and clean.
+<ul>
+<li><strong>gap_follow</strong>: My reference autonomous routines. You will be designing your own implementation of these.</li>
+<li><strong>ldo6</strong>: A driver for the LD06 LiDAR. This is provided for your convience, and you are not expected to know how
+this
+works.</li>
+<li><strong>pure_pursuit</strong>: Another reference implementation for you, to be redone for your own implementation.</li>
+<li><strong>tinykart</strong>: Utilities for accessing the RC car hardware. While you will not be implementing these, they will be
+discussed.</li>
+</ul>
+</li>
+<li><strong>platformio.ini</strong>: PIO's configuration file. While you will not be required to touch this, for your own
+implementation
+this
+is where you would add additional libraries or board configs.</li>
+<li><strong>src</strong>: tinykart implementation files, using the include headers.
+<ul>
+<li><strong>dma.cpp</strong>: DMA reader implementation. Don't worry about this</li>
+<li><strong>main.cpp</strong>: Arduino main file. This is where the magic happens.</li>
+<li><strong>stm32h7xx_hal_msp.c</strong>: Handles configuring the HAL for areas where we can't use Arduino, like the LiDAR. Don't
+worry
+about this, unless you are adding more sensors and also cannot use Arduino.</li>
+</ul>
+</li>
+<li><strong>test</strong>: Unit tests go here, although these are TBD.</li>
+</ul>
+<h2 id="tinykart-extensions"><a class="header" href="#tinykart-extensions">TinyKart &quot;Extensions&quot;</a></h2>
+<p>To make things easier for you, we provide a bit of a framework for TinyKart, containing implementations of the harder
+parts of using Arduino to interface with the required hardware. This section will contain a brief explanation of these
+components.</p>
+<h3 id="tinykart-struct"><a class="header" href="#tinykart-struct">TinyKart struct</a></h3>
+<p>The <code>TinyKart</code> struct, implemented in the tinykart local lib, is an abstraction for working with the RC car hardware. It
+lives in global scope:</p>
+<pre><code class="language-c++">// Robot control
+TinyKart *tinyKart;
+</code></pre>
+<p>You can use it to ex. move the steering to a certain angle, or set the throttle or brake:</p>
+<pre><code class="language-c++">                    // Actuate kart
+                    tinyKart-&gt;set_forward(command.throttle_percent);
+                    tinyKart-&gt;set_steering(command.steering_angle);
+</code></pre>
+<h3 id="lidar-utilities"><a class="header" href="#lidar-utilities">LiDAR utilities</a></h3>
+<p>The <code>LD06</code> class is a driver for the LD06 Lidar. <code>ScanBuilder</code> is a class for working with the
+raw data returned from the driver. These both live in global scope:</p>
+<pre><code class="language-c++">LD06 ld06{};
+
+// Scan processor
+ScanBuilder scan_builder{360 - 90, 90, ScanPoint{0.1524, 0}};
+</code></pre>
+<p>These will be introduced further in the next chapter.</p>
+<h3 id="logger"><a class="header" href="#logger">Logger</a></h3>
+<blockquote>
+<p>NOTE: Because of newlib restrictions, attempting to print a floating point number will hardfault</p>
+</blockquote>
+<p>Because we need to use the UART interrupt for the LiDAR driver, we are unable to use the Serial library. Because print
+debugging is quite useful, we reimplement a basic equivalent. The equivalent to <code>Serial</code> is now a global <code>logger</code>
+defined
+in logger.hpp.</p>
+<p>Ex. to printf:</p>
+<pre><code class="language-c++">
+                    logger.printf(&quot;Target point: (%hi,%hi)\n&quot;, (int16_t) (target_pt.x * 1000),
+                                  (int16_t) (target_pt.y * 1000));
+
+</code></pre>
+<p>Unlike the Serial library, this printf is actually non-blocking, and uses interrupts to process the message behind the
+scenes. This means that there will be some lag before the message is printed, as it needs to be queued for
+synchronisation
+purposes.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="the-baby-lidar-"><a class="header" href="#the-baby-lidar-">The Baby Lidar ☺</a></h1>
+<p>It's finally time to play with our first piece of hardware!</p>
+<p>I would like to introduce the LD06, AKA Baby LiDAR!</p>
+<img src="assets/lidar.jpg"/>
+<h2 id="lidars"><a class="header" href="#lidars">LiDARs</a></h2>
+<p>So why do we even have a LiDAR? Well, LiDARs provide a means to get a slice of the world around you as distance data.
+This is extremely useful for mobile robots, since there really isn't another sensor that can give the same field of view
+as a LiDAR.</p>
+<p>Generally speaking, there are two kinds of LiDAR, 2d and 3d. 3d LiDARs get distance values with both a vertical and
+horizontal angle. 2d LiDARs, like the LD06, only get distance values from a flat plane. This makes them far less
+versatile in the real world, but significantly easier to work with and cheaper.</p>
+<p>To get a mental model of how a LiDAR works, think of a laser rangefinder, such as those used in golf. You point it at
+something, and it gives a distance reading at some frequency. Now think about what happens if we put that rangefinder
+on a spinning motor. as the motor spins the rangefinder, the rangefinder will read a different location each time,
+with a density of points proportional to is frequency. Given a high enough frequency, this readout will give you a
+2d slice of the world around you as polar coordinates.</p>
+<p>For a visualization, take a look at this diagram from the LD06 user manual:</p>
+<img src="assets/scan.png"/>
+<p>Like all sensors, LiDAR has operating limits. For LiDARs, these limits are generally its frequency and range.
+Unsurprisingly,
+the LD06 is pretty bad at both, reading at 10Hz with a max range of 8-10m. This means that care needs to be taken to
+avoid outpacing the speed of the LiDAR itself.</p>
+<h2 id="uart"><a class="header" href="#uart">UART</a></h2>
+<p>The LD06 of course needs to connect to our board somehow. While industrial LiDARs generally use Ethernet for this
+purpose,
+our little baby lidar uses UART. UART, or RS232 (kinda, I'm not opening that debate) is a very simple protocol for
+communication between embedded processors. While I won't get super into the weeds with how UART is implemented, think of
+it as a very minimal layer over the idea of sending data over a wire as binary via high and low signals. In hardware,
+UART is implemented (In most modern uses) as simply two or even just one wire, like so:</p>
+<img src="https://cdn.rohde-schwarz.com/pws/solution/research___education_1/educational_resources_/oscilloscope_and_probe_fundamentals/05_Understanding-UART_01_w1280_hX.png"/>
+<p>UART is
+an asynchronous protocol, that is, it does not have a clock line. This means that without prior configuration, the
+receiver would have no way of knowing how fast the sender plans to send high and low bits. For UART, we call this
+rate <strong>baud</strong>, measured in bits per second (effectively). This gives the advantage of removing the clock wire and thus
+requiring less hardware, at the expense of anguish if you configure your reciver to a different baud than the sender.</p>
+<p>Also worth noting is that UART has no link-layer error detection, so higher layer protocols using UART almost always
+include error detection methods such as Cyclical Redundancy Checks (CRCs) to ensure data integrity should there be
+electrical noise in the system.</p>
+<h2 id="connecting-baby-lidar"><a class="header" href="#connecting-baby-lidar">Connecting Baby Lidar</a></h2>
+<div class="warning">
+Be careful with the baby lidar! They scratch very easily, which may lower accuracy.
+</div>
+<p>Preamble aside, lets get the Baby connected. From the manual, the LD06 has the following pinout:</p>
+<img src="assets/pinout.png"/>
+<p>As you can see, the LiDAR actually only has a UART transmitter, which means we will only need a UART receiver (Rx) on
+the
+board side. The PWM input is unused, and the other two pins are simply power and ground.</p>
+<p>While there are a variety of ways to connect these to the board, TinyKart is configured to use the following pins:</p>
+<img src="assets/lidar_connect.png"/>
+<p>Go ahead and connect these to the respective pins on the wire connected to baby lidar. The end result should look
+something like this:</p>
+<img src="assets/lidar_connected.jpg"/>
+<div class="warning">
+Before you add power to the board, PLEASE double-check the ground and 5V pins. If these are swapped then the
+LiDAR could be damaged.
+</div>
+<p>With that being said, it's time to see the little guy come to life! Just plug in the board, and the LiDAR should spin to
+life!</p>
+<img src="assets/lidar_spin.gif"/>
+<h2 id="reading-baby-lidar"><a class="header" href="#reading-baby-lidar">Reading Baby Lidar</a></h2>
+<p>First off, we need to figure out how to actually read the UART line connected to the LiDAR. This can be done in one of
+two ways:</p>
+<ul>
+<li>Polling: Checking if a byte has been received in the arduino loop()</li>
+<li>Interrupts: Having hardware call an interrupt request handler (IRQ) function whenever a byte arrives</li>
+</ul>
+<p>Generally, polling is going to be slower but more convient, whereas interrupts require hardware support but allow for
+hardware to communicate in parallel with your programs' execution.</p>
+<p>By default, Arduino essentially only allows for polling, as it uses the IRQ itself behind the scenes. This unfortunately
+is actually too slow for how fast the LiDAR runs, so we have to make our own approach using interrupts. This is actually
+quite complex and delves into STM HAL code, so the code won't be discussed here (if you're curious, check the dma.cpp
+file).</p>
+<p>The LD06 sends its data in frames with the following format:</p>
+<img src="assets/lidar_format.png"/>
+<p>As you can see, each frame from the lidar will be 47 bytes, and contain data between some start and end angle. Notice
+how
+all data is in large integer values. This is because sending floats over the wire is quite inefficient, so we simply
+scale
+up the values and use ints instead. The LSB and MSB refers to least and most significant bit respectively. This
+indicates
+the endiness of the data, or the ordering of each byte in multibyte structures. For example, if <code>0x270F</code>(9999 decimal)
+is
+sent over this UART protocol, then it will actually be read and sent as <code>0x0F27</code>. While this seems insane, this is
+actually
+how the ARM processor on the board <em>already</em> stores the ints. So by doing this, we can do simple C pointer magic to read
+the two bytes as a 16-bit integer:</p>
+<pre><code class="language-c++">    packet.radar_speed = *reinterpret_cast&lt;uint16_t *&gt;(current_scan + 2);
+</code></pre>
+<p>With all this layed out, our approach looks like the following:</p>
+<ol>
+<li>LiDAR sends bytes over the UART</li>
+<li>UART peripheral triggers IRQ</li>
+<li>We copy a single byte to a buffer of bytes in RAM (literally just a uint8_t array)</li>
+<li>Repeat until we have 47 bytes</li>
+<li>Once we have 47 bytes, we need to figure out where the frame starts. To do this, we find the 0x54 start header. Align
+the buffer to now start at this byte.</li>
+<li>If that were to make us under 47 bytes, exit and wait for more</li>
+<li>Else, process the frame data into a C++ struct using the above pointer technique</li>
+</ol>
+<p>This approach is implemented in the ld06 driver provided for your use.</p>
+<h2 id="review"><a class="header" href="#review">Review</a></h2>
+<p>Alright, that was quite the infodump. Let's take a look at the code you'll be working with, and actually see what this
+looks like in action.</p>
+<p>Open main.cpp.</p>
+<p>On line 15 you'll see the creation of our driver:</p>
+<pre><code class="language-c++">LD06 ld06{};
+</code></pre>
+<p>Farther down in the setup, you'll see us configuring our callback to copy the buffer to the driver in the IRQ:</p>
+<pre><code class="language-c++">    // Init DMA and UART for LiDAR
+    dmaSerialRx5.begin(230'400, [&amp;](volatile LD06Buffer buffer) {
+        // On each packet received, copy over to driver.
+        ld06.add_buffer(buffer, 47);
+    });
+</code></pre>
+<p>Finally, we poll the driver to see if a scan has been processed in the loop:</p>
+<pre><code class="language-c++">    noInterrupts();
+    auto res = ld06.get_scan();
+    interrupts();
+</code></pre>
+<p>Interrupts are disabled around the LiDAR to avoid issues when a new buffer arrives and starts copying right as we read
+the previous buffer (known as a <em>race condition</em>).</p>
+<p>The processed scan frames have the following layout:</p>
+<pre><code class="language-c++">struct LD06Frame {
+    /// The rotational speed of the unit, in degrees per second.
+    uint16_t radar_speed;
+    /// The starting angle of this scan, in degrees.
+    float start_angle;
+    /// Distance readings.
+    Range data[12];
+    /// The ending angle of this scan, in degrees.
+    float end_angle;
+    /// The timestamp of this scan, in ms. This will roll over at 30000.
+    uint16_t timestamp;
+    /// The CRC check from the lidar.
+    uint8_t crc8;
+</code></pre>
+<p>Remember that each range is just a distance reading, which occurred at some angle. To retrieve this data,
+we must interpolate the index with the start and end angles:</p>
+<pre><code class="language-c++">    [[nodiscard]] float get_angle_of_reading(uint8_t reading_idx) const {
+        assert(reading_idx &lt; 12);
+        auto angle = start_angle + get_step() * float(reading_idx);
+
+        if (angle &gt; 360.0) {
+            angle -= 360.0;
+        }
+        return angle;
+    }
+</code></pre>
+<p>With this, we have all that we need to interpret frames from the LiDAR! Armed with this information,
+I recommend messing around with main.cpp to log data read by the board, and monitor the results by using the PIO
+monitor.</p>
+<h2 id="scan-building"><a class="header" href="#scan-building">Scan Building</a></h2>
+<p>Cool, so we can read frames. As it turns out, this actually isn't all that useful. This is because each frame actually
+only covers a very small region of the overall scan. This makes sending the LiDAR data much easier, but makes processing
+on our end a bit more complicated. To remedy this, we must assemble scans by hand, as we receive frames. During this
+process,
+we can also do other forms of filtering on the frames to make the data easier to work with. This is generally called
+<em>scan preprocessing</em>,
+and is done on actual industrial robots.</p>
+<p>Our approach:</p>
+<ol>
+<li>for each frame:
+<ol>
+<li>If frame is in the range we want to read
+<ol>
+<li>If reading is noisy, ignore it</li>
+<li>Convert each range to (x, y) coordinates about the lidar, from polar. Store this in a buffer.</li>
+</ol>
+</li>
+<li>else, if the last frame was in range, and thus our desired scan area is full, return the completed scan.</li>
+</ol>
+</li>
+</ol>
+<p>This is implemented in the ScanBuilder class:</p>
+<pre><code class="language-c++">    /// Adds a frame to the scan builder
+    std::optional&lt;std::vector&lt;ScanPoint&gt;&gt; add_frame(const LD06Frame &amp;frame) {
+        // Filter to in range
+        if (scan_in_range(frame.start_angle, frame.end_angle)) {
+            last_scan_in_bounds = true;
+
+            // Convert points to cartiesian points
+            for (int i = 0; i &lt; 12; ++i) {
+                // Skip points that are outside the scan, but some in the frame are
+                if (!scan_in_range(frame.get_angle_of_reading(i), frame.get_angle_of_reading(i))) continue;
+
+                auto [range, angle] = frame.get_range_in_polar(i);
+                float radian_angle = angle * (float(M_PI) / 180);
+
+                float x = range * sinf(radian_angle);
+                float y = -(range * cosf(radian_angle));
+
+                // Read noisy points as 0, which is what unreadable points are also received as
+                if (frame.data[i].confidence &lt; 150) {
+                    x = 0;
+                    y = 0;
+                }
+
+                // Convert from mm to m
+                x /= 1000;
+                y /= 1000;
+
+                // Apply lidar offset
+                x += lidar_offset.x;
+                y += lidar_offset.y;
+
+                buffer.push_back(ScanPoint{x, y});
+            }
+        }
+            // Full scan area covered
+        else if (last_scan_in_bounds) {
+            last_scan_in_bounds = false;
+
+            return std::move(buffer);
+        }
+
+        return std::nullopt;
+    }
+</code></pre>
+<p>In the tinykart default implementation, this is configured to read from -90 to 90 degrees:</p>
+<pre><code class="language-c++">ScanBuilder scan_builder{360 - 90, 90, ScanPoint{0.1524, 0}};
+</code></pre>
+<h2 id="putting-it-all-together"><a class="header" href="#putting-it-all-together">Putting it all together</a></h2>
+<p>Time for you to get your hands dirty! Before anything else, replace your loop with the one below:</p>
+<pre><code class="language-c++">void loop() {
+    noInterrupts();
+    auto res = ld06.get_scan();
+    interrupts();
+
+    // Check if we have a scan frame
+    if (res) {
+        auto scan_res = *res;
+
+        // Check if frame erred
+        if (scan_res) {
+            auto maybe_scan = scan_builder.add_frame(scan_res.scan);
+
+            // Check if we have a 180 degree scan built
+            if (maybe_scan) {
+                auto scan = *maybe_scan;
+                
+                logger.printf(&quot;*****START SCAN******\n&quot;);
+                for (auto &amp;pt: scan) {
+                    logger.printf(&quot;Point: (%hu,%hu)\n&quot;, (uint16_t) pt.x, (uint16_t) pt.y);
+                }
+                logger.printf(&quot;*****END SCAN******\n\n&quot;);
+            }
+        } else {
+            switch (scan_res.error) {
+                case ScanResult::Error::CRCFail:
+                    logger.printf(&quot;CRC error!\n&quot;);
+                    break;
+
+                case ScanResult::Error::HeaderByteWrong:
+                    logger.printf(&quot;Header byte wrong!\n&quot;);
+                    break;
+            }
+        }
+    }
+}
+</code></pre>
+<p>This code builds on the review section, and now also prints out completed scans, once they are built. Flash this to your
+board, and open the PIO monitor. You should see data blaze by.</p>
+<p>Try putting our hand around the LiDAR. You should see the values lower. Something to note about these cartisian
+coordinates
+is that they are in right-hand-rule. That is, x is positive forwards and y is positive to the left. This is the standard
+coordinate system in robotics.</p>
+<h3 id="homework"><a class="header" href="#homework">Homework</a></h3>
+<p>Now it's time for your challenge. Given the above code, create a program that prints &quot;GOTCHA!&quot; whenever someone
+is 50cm or less from the <em>back</em> of the LiDAR. This will only require modifying things in main.cpp, and only in loop and
+the globals. If you have any questions on units, formats etc., read the docs in the code! This is good practice for
+working
+on larger projects, since rarely will there be guides as verbose as this one to step through the code.</p>
+<p>Good luck!</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="moving-the-kart"><a class="header" href="#moving-the-kart">Moving the Kart</a></h1>
+<p>Now that you have given TinyKart its proverbial eyes with the LiDAR, it's time to give it its proverbial legs (this
+sounded better on paper lol). Specifically, we will be going over how to actually make the kart steer and accelerate.
+Much like the LiDAR, you won't be writing all the driver code, but it's very important to understand how it all works,
+since the patters appear all over embedded programming.</p>
+<h2 id="hardware-1"><a class="header" href="#hardware-1">Hardware</a></h2>
+<p>Before we can program the hardware, we first need to discuss, well, the hardware! In robotics, anything that can make
+a piece of a robot move is called an <strong>actuator</strong>. For example, the wheels on a Roomba, or the claw on Spot.</p>
+<p>The Traxxas Slash has two main means of actuation:</p>
+<ol>
+<li>Steering</li>
+<li>Accelerating the rear wheels</li>
+</ol>
+<p>Steering is achived with a servo motor:</p>
+<img style="width: 100%" src="data:image/jpeg;base64,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"/>
+<p>Servos are motors that are designed to hold a particular position, rather than continuing to rotate. By adding another
+linkage, this rotational angle can be converted to a linear position, thus creating a linear actuator that can hold a
+particular
+distance. As it turns out, that's exactly how steering works! Essentially, mechanical linkages are geometrically
+connected
+to the servo such that each far end of the servos range will cause the wheels to reach their max turning angle.</p>
+<p>On the other hand, accelerating is something that requires a continues axis, so a servo would make no sense. In this
+case,
+the RC car simply uses a brushed DC motor:</p>
+<img src="https://m.media-amazon.com/images/W/MEDIAX_792452-T2/images/I/61jmRJo1eiL._AC_UF1000,1000_QL80_.jpg">
+<p>While discussion on brushed motors is better done by the more electrically inclined, a simple way to understand these
+things
+is that when you apply a voltage across the two leads, a magnetic field in the motor forms, moving the output shaft:</p>
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Electric_motor.gif/200px-Electric_motor.gif">
+<p>Critically, the polarity of the voltage across the leads must switch, or else the motor will just stall. Thankfully,
+there is dedicated hardware designed to do this for us, called a <strong>motor controller</strong> or <strong>ESC (Electronic Speed
+Control)</strong>.
+The ESC on the Slash looks like this:</p>
+<img style="width: 100%" src="https://cdn11.bigcommerce.com/s-sdwy6qdoez/images/stencil/1280x1280/products/3904/4274/TRA3018R-1__97045.1526417195.jpg?c=2">
+<p>The ESC sits between the battery and the motor, controlling the polarity and power as required to reach some level of
+output speed. This means that when we want to move the motor, we need to interact with the ESC.</p>
+<h2 id="interface"><a class="header" href="#interface">Interface</a></h2>
+<p>So how to we actually control these actuators? Conveniently, they actually use the same exact interface. That is <strong>Pulse
+Width Modulation (PWM)</strong>.</p>
+<p>PWM shows up all over electrical things, both as an effectively analog power source, and as a digital signal, as it is
+used here.
+The idea of PWM is to represent an analog range like 0-100% using a digital signal, which can naturally only be 0 or 1.
+While this could be done by sending binary integers, that would be extremely inefficient. Instead, PWM works by creating
+set periods of time. Inside these periods, the percentage of time the signal is high versus low is the analog value
+itself,
+called the <strong>duty cycle</strong>. For a visualisation:</p>
+<img style="width: 100%" src="https://upload.wikimedia.org/wikipedia/commons/b/b8/Duty_Cycle_Examples.png">
+<p>The issue with this approach is that because the duty cycle is time on over period, the frequency of the PWM signal must
+be set in stone. For historical reasons, RC cars do not like this, and use a different approch, called <strong>Pulse <em>Period</em>
+Modulation</strong>.</p>
+<p>In this formulation, 0-100% is not the duty cycle, but rather a range of <em>time</em> the signal is high versus low. For
+example,
+most servos use 1.0ms high for min angle, 1.5ms high for their midpoint, and 2.0ms for their max angle. This approach
+means
+that any frequency with a period greater than 2.0ms can control the servo, allowing it to work with very cheap hardware.</p>
+<p>As it turns out, this is also exactly how the ESC works! The only difference being that 1.0ms is full reverse, and 2.0ms
+is full forward power.</p>
+<h2 id="setting-up-the-hardware"><a class="header" href="#setting-up-the-hardware">Setting up the hardware</a></h2>
+<p>Alright, now it's time for you to set up your controller to connect to these actuators. To do this, we're going to have
+to do a tiny bit of wiring to get stuff setup. Each of the actuators has a connector like this:</p>
+<img src="https://tinycircuits.com/cdn/shop/products/ASR00013-02_740x.png?v=1579634111">
+<p>For the servo these pins mean:</p>
+<ul>
+<li>Red: 5V in, to power the servo</li>
+<li>Black: Ground</li>
+<li>White: PWM control signal in</li>
+</ul>
+<p>For the ESC these pins mean:</p>
+<ul>
+<li>Red: 5V <strong>out</strong>, to power the servo</li>
+<li>Black: Ground, to battery</li>
+<li>White: PWM control signal in</li>
+</ul>
+<p>Our goals for wiring things up is to:</p>
+<ol>
+<li>Connect ESC 5V out to servo 5V in</li>
+<li>Connect ESC and servo PWM to pins on the controller</li>
+<li>Connect all three to common ground</li>
+</ol>
+<p>To do this:</p>
+<ol>
+<li>Make sure the system is powered off</li>
+<li>Jump the ESC 5V to servo 5V</li>
+<li>Jump ESC and Servo ground together using a breadboard</li>
+<li>Jump a ground pin from the controller to the same breadboard lane as the other two grounds, creating a common ground</li>
+<li>Finally, jump the ESC and Servo PWM lines to these exact pins:</li>
+</ol>
+<img style="width: 100%" src="assets/actuator_connect.png">
+<p>Red being A0, and green being D0.</p>
+<p>Now, connect the battery to the esc, and power to the controller. Now, press and hold the little blue
+button on the ESC to turn it on. Finally, reset the controller. You should see the kart do a little jump, and
+maybe move its wheels. This is good! This means that the ESC is armed, and ready to move.</p>
+<h2 id="the-code"><a class="header" href="#the-code">The code</a></h2>
+<p>Now that things are hooked up, you can move the kart with commands on the TinyKart class:</p>
+<pre><code class="language-c++">tinyKart-&gt;set_forward(command.throttle_percent);
+tinyKart-&gt;set_steering(command.steering_angle);
+</code></pre>
+<p>Feel free to explore the other methods on the class, as they allow for movement in other ways, such as in reverse.</p>
+<p>While this high level API is all you will be working with for the autonomy, I want to briefly show how its implemented:</p>
+<pre><code class="language-c++">    /// Sets the esc to power forward with some 0.0-1.0 percent.
+    void set_forward(float power) const {
+        assert(power &lt;= 1.0 &amp;&amp; power &gt;= 0.0);
+
+        // Forward is 1.5-2.0ms periods
+        auto value = uint16_t(((1.5 + power * 0.5) / period) * max_pwm_duty);
+        analogWrite(pwm_pin, value);
+    }
+</code></pre>
+<p>As you can see, its actually rather simple, thanks to Arduino. I want to untangle that second line for you, since
+there's
+really two things going on here.</p>
+<p>First, the value of that line is the value we are setting the hardware PWM peripheral's register to control the duty
+cycle. Because PWM is digital, we can only output duty cycle percents up to some resolution in bits. Think of these as
+buckets,
+and the more buckets we have the more we can slice the 0-100% range into finer pieces to uniformly distribute among the
+buckets. For example, Arduino defaults to an 8 bit PWM, which means that setting the register to 255 will be 100% duty
+cycle,
+0 will be 0%, and 255//2 will be closeish to 50%.</p>
+<p>In the case of our ST board, we have a 12-bit PWM, which means that we have 4092 &quot;buckets&quot;. This means to select some
+percent
+duty cycle, you use the equation: \( power * 4092 \), where power is in range [0, 1].</p>
+<p>Second, the <code>analogWrite</code> call sets duty cycle, not duty width, which is what we're looking for. This means that we need
+to map our desired percent first from percent to width in ms, then from ms to duty cycle, then duty cycle to register
+value. This is exactly what that one-liner is doing. From left to right:</p>
+<ol>
+<li>Our forward time range is 1.5-2.0ms, so divide our power by 2 and add it to 1.5, to get our desired percent in time
+domain.</li>
+<li>We need this time width in duty cycle, so we now need to find the percent of time that width takes out of the
+complete PWM period.
+To do this, we just divide by the period, which is just a constant set in <code>setup()</code>.</li>
+<li>Finally, take this 0.0-1.0 duty cycle and multiply it by the max register value (4092 here) to get the value to write
+to the register.</li>
+<li>Write the value to the register using <code>analogWrite</code>.</li>
+</ol>
+<p>The servo works exactly the same, except split over left vs right rather than reverse vs forwards.</p>
+<h3 id="stop-and-think"><a class="header" href="#stop-and-think">Stop and think</a></h3>
+<p>Now I said this is important to understand, even if you won't be writing it. Now's the time to ponder how this setup
+could
+influence the autonomy. Before you see the explanation, please think this over for a moment, to make sure you have a
+good grasp on things.</p>
+<details>
+  <summary>An answer</summary>
+<p>I would say this setup has two main consequences upstream in the autonomy stack:</p>
+<ol>
+<li>Latency</li>
+<li>Precision</li>
+</ol>
+<p>First, because PWM signals have a set period width, this limits the rate at which we can update the steering and speed,
+since we must wait for the prior PWM period to end before we can change the duty cycle. While this isn't of massive
+significance,
+It's something to consider as adding, ex. 10ms of latency at 100Hz (what the reference code you have is using) is
+actually
+quite a large value on the embedded world.</p>
+<p>Second, 12-bits of resolution is quite high, but because we are stuck with only using small period ranges, we actually
+have very little resolution. This means that while you can still get rather specific with your steering angles (
+certainly fine for our use),
+small angle increments can sometimes have no effect or a large effect depending on if it causes us to step into
+another &quot;bucket&quot;.</p>
+<p>While neither of these are really something you need to worry about, its worth taking the time to think about how your
+hardware will constrain your autonomous routines, as this is something that is far more pronounced on a full size
+vehicle.</p>
+</details>
+<h2 id="homework-1"><a class="header" href="#homework-1">Homework</a></h2>
+<p>Alright, now it's your turn to make the funny RC car move. Keep building off your last code, although you will need to
+hack it a bit.</p>
+<p>Your challenge today is to make the kart slow proportionally to the distance in front of it. This will be very useful in
+the autonomous routines later, as it will help prevent the kart from sliding around. Doing this will require you to use
+distance values from the LiDAR again, but with it facing forward as is proper. Specifically, the kart should be able to 
+avoid hitting an object with much speed, and preferably stop before hitting it at all. Consider experimenting with
+using reverse as a brake. </p>
+<p>Start slow and build your way up in speed and see how fast you can go! This experience will come in handy later when 
+testing autonomous things.</p>
+<p>Note that when the kart boots, it starts in a paused state, indicated by the yellow LED. In this state, it rejects all
+commands. To allow it to move, press the blue button. Press the button again to stop the kart (this is what you were
+doing the first day!). If you want to use this functionality in your own code (like to stop if the kart hit something):</p>
+<pre><code class="language-c++">tinykart-&gt;pause(); // Stops
+tinykart-&gt;unpause(); // Starts
+</code></pre>
+<p>Some notes before you start:</p>
+<ul>
+<li>When running the kart in motion, make sure everything is well secured. Perhaps consult your friendly ME peers to see
+how to do this well. In particular, if ground is disconnected the kart goes wild, so be careful.</li>
+<li>The controller can be powered off of mobile battery banks, not just from a laptop. Use this to make the kart cordless.
+The controller will boot to its last flashed code.</li>
+<li>The kart is fast! On slippery floor especially it can really get away from you, so I recommend capping the speed at
+around
+0.3 at most. It also tends to stall around 0.15. For grippier floors like carpet, move that range up a bit.</li>
+</ul>
+<p>To set the karts max speed, modify the 3rd parameter in the TinyKart constructor:</p>
+<pre><code class="language-c++">    tinyKart = new TinyKart{STEERING_PIN, esc, 0.3, 4.5};
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="the-part-where-we-make-it-move"><a class="header" href="#the-part-where-we-make-it-move">The Part Where we Make it Move</a></h1>
+<p>Ladies, gentleman, baby lidar - it's finally time to make TinyKart autonomous!</p>
+<p>This is going to be a multipart process, and be quite a bit more involved than the prior sections. This is why we're
+doing this project after all.</p>
+<h2 id="sense-think-act"><a class="header" href="#sense-think-act">Sense-Think-Act</a></h2>
+<p>Before we look into algorithms, I want to give a very brief look at the way mobile robotics is 'normally' done. This
+will
+be very high level, but should you give you a decent mental model of what we've been doing this whole time.</p>
+<p>At a high level, autonomous stacks can be described using 'sense-think-act', a pretty ancient paradigm but one that
+works for a simple system like TinyKart.</p>
+<p>For TinyKart, sense think act looks like the following:</p>
+<img style="width: 100%" src="assets/sense-think-act.png">
+<p>The idea of sense think act is that most robotics solutions form a pipeline where you read from sensors, plan based off
+that new data, execute those plans, and finally repeat this over and over as the sensors get new data, and you progress
+towards your goals.</p>
+<p>As you can see, you've actually already completed sense and act. All you need to do now is think, and wire it all
+together!</p>
+<h2 id="planning"><a class="header" href="#planning">Planning</a></h2>
+<p>For mobile robotics, the think step above generally encompasses two main processes:</p>
+<ul>
+<li>Path Planning</li>
+<li>Path Tracking</li>
+</ul>
+<h3 id="path-planning"><a class="header" href="#path-planning">Path Planning</a></h3>
+<p>Path planning is the act of taking the state of the world as input, and outputting a path for the robot to follow.
+How this is done is entirely dependent on your sensors and goal for the robot.</p>
+<img src="https://www.mdpi.com/algorithms/algorithms-15-00477/article_deploy/html/images/algorithms-15-00477-g001.png">
+<p>Generally speaking, a path is represented as a sequence of points to follow, rather than a line or something. For
+TinyKart, we will actually only plan to a single point as we lack any sort of feedback on our speed, required to
+use multipoint paths.</p>
+<p>Path planning algorithms span from general algorithms like A* or RRT to bespoke algorithms such as the gap
+algorithms you will be writing.</p>
+<h3 id="path-tracking"><a class="header" href="#path-tracking">Path Tracking</a></h3>
+<p>Path tracking algorithms take paths from a path planner and actually calculate the command the robot needs to perform to
+follow the path. </p>
+<p>By <strong>command</strong>, we mean the value all actuators should be set to continue following the path. Because of this, path 
+trackers are independent of the path planner, but do depend on the actuators and geometry of your robot, known as 
+<strong>kinematics</strong>.</p>
+<p>For multipoint paths, this generally looks like:</p>
+<ol>
+<li>Sample path to find next point we should head to</li>
+<li>Determine command to reach this point</li>
+</ol>
+<p>For our single point path, we only need to do step 2, which is considerably easier.</p>
+<p>For examples of path planning algorithms, see Pure Pursuit, DWB, and MPC.</p>
+<p>The following chapters will go more in depth on these two topics.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="planning-follow-the-gap"><a class="header" href="#planning-follow-the-gap">Planning: Follow the Gap</a></h1>
+<blockquote>
+<p>NOTE: This chapter is basically just an adaptation of F1/10ths chapter on the same subject (thanks creative commons!).
+Please give their content a look for more <a href="https://f1tenth.org/learn.html">info</a>.</p>
+</blockquote>
+<p>As mentioned before, the first part of our autonomous stack will be the planner, which determines the point we want to
+send the kart to.</p>
+<p>As discussed prior, what a planner actually does depends on the goal of the robot. In the case of TinyKart, that would
+be:</p>
+<ol>
+<li>Do not hit things</li>
+<li>Complete laps around an enclosed circuit as with the lowest time possible</li>
+</ol>
+<p>Thus, a planner for TinyKart should aim to maximize these goals. The planners introduced in this chapter will not be the
+best for this task, but show a possible approach.</p>
+<p>Considering these goals is important, as many existing approaches to planning (such as A*) don't make a ton of sense
+in the context of TinyKart, and will lead to suboptimal results, even if they are completely acceptable in other
+contexts.</p>
+<h2 id="naive-follow-the-gap"><a class="header" href="#naive-follow-the-gap">Naive Follow the Gap</a></h2>
+<p>First off, we will introduce planners using F1/10ths follow the gap. This is an incredibly basic algorithm that decides
+the next point to head to by simply finding the center point of the largest gap in each scan.</p>
+<img src="assets/n_gap.png">
+<p>Based off this description, the algorithm would look something like:</p>
+<ol>
+<li>Given scan</li>
+<li>find the start and end index of the largest gap</li>
+<li>Return target point as <code>scan[(start_idx+end_idex)/2]</code></li>
+</ol>
+<p>Of course, this is rather hand waving away item 2. What even is a gap? We can model one as a set of points from the scan
+that fulfill two conditions:</p>
+<ol>
+<li>All points are greater than some distance</li>
+<li>The points are in a continues sequence</li>
+</ol>
+<p>Thus, the algorithm now looks something like this:</p>
+<ol>
+<li>Given scan</li>
+<li>for point in scan
+<ol>
+<li>if point dist is greater than threshold
+<ol>
+<li>increase length of current gap</li>
+<li>set the start index of current gap to index of point if this is the start of a new gap</li>
+</ol>
+</li>
+<li>else, a gap has ended
+<ol>
+<li>if gap length is greater than threshold
+<ol>
+<li>add gap to collection of gaps</li>
+</ol>
+</li>
+<li>reset gap tracking variables</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>If there was an ongoing gap on the far side of the scan when the loop ended, add that gap</li>
+<li>Find the largest gap in the collection of gaps (Hint: what data structure would be good for this?)</li>
+<li>return the center point of that gap as the target point</li>
+</ol>
+<p>And as it turns out, that's really the best you can make the naive approach. The downfall of this approach is that it 
+has a tendency to cut corners, as the kart's limited turning radius means it needs to approach the corner from the far
+wall in order to arc properly. The next approach we will discuss will aim to solve this.</p>
+<h3 id="your-turn"><a class="header" href="#your-turn">Your turn</a></h3>
+<blockquote>
+<p>NOTE: This section makes use of C++'s std::optional. If you haven't worked with it before, please check out this
+article <a href="https://dev.to/delta456/modern-c-stdoptional-58ga">here</a>.</p>
+</blockquote>
+<p>While things are still simple, it's time for you to get your hands dirty and get this kart moving autonomously! In this 
+section, you will be implementing the above algorithm yourself. To begin, replace your main loop with the following:</p>
+<details>
+    <summary>code</summary>
+<pre><code class="language-c++">/// Finds a target point to drive to by finding the largest gap in the scan.
+///
+/// \param scan Lidar scan
+/// \param min_gap_size Minimum number of points in a gap required for it to be considered a gap
+/// \param min_dist Minimum distance for a point to be considered part of a gap, in m
+/// \return Target point to drive to, if a gap is found
+std::optional&lt;ScanPoint&gt; find_gap_naive(const std::vector&lt;ScanPoint&gt; &amp;scan, uint8_t min_gap_size, float min_dist) {
+    // TODO
+}
+
+void loop() {
+    noInterrupts();
+    auto res = ld06.get_scan();
+    interrupts();
+
+    // Check if we have a scan frame
+    if (res) {
+        auto scan_res = *res;
+
+        // Check if frame erred
+        if (scan_res) {
+            auto maybe_scan = scan_builder.add_frame(scan_res.scan);
+
+            // Check if we have a 180 degree scan built
+            if (maybe_scan) {
+                auto scan = *maybe_scan;
+
+                auto front_obj_dist = scan[scan.size() / 2].dist(ScanPoint::zero());
+
+                // If object is 45cm in front of kart, stop (0.0 means bad point)
+                if (front_obj_dist != 0.0 &amp;&amp; front_obj_dist &lt; 0.45 + 0.1524) {
+                    tinyKart-&gt;pause();
+                    digitalWrite(LED_YELLOW, HIGH);
+                }
+
+                // Find target point TODO tune your params
+                auto maybe_target_pt = find_gap_naive(scan, 10, 2)
+
+                if (maybe_target_pt) {
+                    auto target_pt = *maybe_target_pt;
+
+                    logger.printf(&quot;Target point: (%hi,%hi)\n&quot;, (int16_t) (target_pt.x * 1000),
+                                  (int16_t) (target_pt.y * 1000));
+
+                    // Find command to drive to point
+                    auto command = pure_pursuit::calculate_command_to_point(tinyKart, target_pt, 1.0);
+
+                    // Set throttle proportional to distance to point in front of kart
+                    command.throttle_percent = mapfloat(front_obj_dist, 0.1, 10.0, 0.15, tinyKart-&gt;get_speed_cap());
+
+                    logger.printf(&quot;Command: throttle %hu, angle %hi\n&quot;, (uint16_t) (command.throttle_percent * 100),
+                                  (int16_t) (command.steering_angle));
+
+                    // Actuate kart
+                    tinyKart-&gt;set_forward(command.throttle_percent);
+                    tinyKart-&gt;set_steering(command.steering_angle);
+                }
+            }
+        } else {
+            switch (scan_res.error) {
+                case ScanResult::Error::CRCFail:
+                    logger.printf(&quot;CRC error!\n&quot;);
+                    break;
+
+                case ScanResult::Error::HeaderByteWrong:
+                    logger.printf(&quot;Header byte wrong!\n&quot;);
+                    break;
+            }
+        }
+    }
+}
+</code></pre>
+</details>
+<p>Don't worry about the loop much for now, as it contains the path tracker you will be making next chapter. A reference
+implementation is included here to ensure that you can test your planner. All you need to work on for now is <code>find_gap_naive</code>,
+which will contain the algorithm detailed above.</p>
+<p>Once you have a complete implementation, test it with the tinykart in a relatively constrained space, so the lidar can 
+see things. Don't stress too much if it isn't perfect, but try to hack on the algorithm until you're confident you can't 
+make it better.</p>
+<p>This will likely take quite a long time, possibly days depending on how much time you have to work on TinyKart. Feel free
+to take your time with this, and ensure you understand what is happening. This process will be very similar to when you're
+working on it yourself, so its important to get this down. </p>
+<p>If you're ever completely stuck, there is a reference implementation in <code>libs/gap_follow/naive_gap_follow.cpp</code>. 
+I would still try to finish this yourself though, because there are many ways to approach this implementation and things
+only get more complex from here.</p>
+<h2 id="an-improved-approach"><a class="header" href="#an-improved-approach">An Improved Approach</a></h2>
+<p>With that experience under your belt, lets introduce another approach to the problem. This approach can be summarized as
+&quot;Throw yourself at the largest wall&quot;. </p>
+<img style="width: 50%;" src="assets/bubble.png">
+<p>Essentially, we redefine the largest gap to be the largest continues non-zero 
+span of points. This means that our target point will fling us directly at a wall. That's insane! Why would we want to 
+do that? The idea is that doing so will cause us to be on the outside of corners, which means that when we corner our
+kart will have a wider angle to perform its turn. Done well, this almost looks like a racing line. Of course, with the
+current implementation, we will just plow into a wall. So what stops us from doing so?</p>
+<p>To solve this issue, we add a &quot;bubble&quot; that removes points in front of the kart. This looks like:</p>
+<ol>
+<li>Find the closest point in the scan to the kart</li>
+<li>Find all points r distance away from that point</li>
+<li>Set all those points to 0</li>
+</ol>
+<p>Because our gaps cannot contain zeroed points, this means that the kart <em>cannot</em> continue to head towards a wall, since
+when it gets too close, those points are zeroed. This has the effect of the kart bouncing from the largest wall to the largest
+wall, which has the desired cornering properties mentioned above.</p>
+<h3 id="your-turn-1"><a class="header" href="#your-turn-1">Your turn</a></h3>
+<p>As it turns out, this bubble approach is actually very similar in implementation to the algorithm you just implemented.
+It's main differences is the addition of the bubble, and the definition change of the gap. Otherwise, you are still
+searching for the largest gap, and still need to scan the scan for gaps.</p>
+<p>Take your prior implementation, and adapt it to this new approach. You will need to modify both the function arguments
+and body, but the rest of the code should still be fine.</p>
+<p>Once you've got this working, you're at feature parity with the reference kart! As before, a reference implementation of
+this algorithm is in libs if you get stuck. Try to avoid using it though, as this will be great practice for working on
+larger projects where I won't just hand you a template.</p>
+<p><strong>Good luck!</strong></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="path-tracking-pure-pursuit"><a class="header" href="#path-tracking-pure-pursuit">Path Tracking: Pure Pursuit</a></h1>
+<blockquote>
+<p>NOTE: This chapter makes significant use of resources from <a href="https://thomasfermi.github.io/Algorithms-for-Automated-Driving/Control/PurePursuit.html">this article</a>,
+adapted for use in TinyKart. Please take a look there for more details on the math side of things.</p>
+</blockquote>
+<p>Now that we have a target point, all you need to do is find out how to actually get the kart there. This is the
+responsibility of <strong>path trackers</strong>.</p>
+<p>Much like path planners, path trackers come in many varieties, depending on the robot and requirements. For example,
+some planners like Pure Pursuit simply directly head to the target, some like ROS's DWB attempt to avoid obstacles,
+and some use advanced control algorithms such as Model Predictive Control to attempt to also handle vehicle dynamics
+(such as wheel slip). These range in difficulty of implementation from elementary to reasurch.</p>
+<p>In the last chapter, you were using a reference implementation of pure pursuit. In this chapter, you will learn how to
+reimplement this yourself, and get a better idea of how to tune it.</p>
+<h2 id="kinematics"><a class="header" href="#kinematics">Kinematics</a></h2>
+<p>Before we can talk about pure pursuit, we first need to introduce vehicle kinematics. Kinematics is the study of how
+things move without respect to forces (dynamics). For example, the kinematics of a car define where the car will go
+given some steering angle input alone, without considering things like wheel slip that depends on surface friction.
+While far less accurate than using dynamics, robot kinematics gives us a good estimation of how our robot should move
+given some command.</p>
+<p>Because kinematics doesn't depend on forces, it could be said that it instead relies on geometries. This means that
+the physical layout of the robot defines your robot's kinematics. While these are theoretically infinite, they tend to
+come in only a few varieties:</p>
+<p><strong>Differential Drive:</strong></p>
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Differential_Drive_Kinematics_of_a_Wheeled_Mobile_Robot.svg/300px-Differential_Drive_Kinematics_of_a_Wheeled_Mobile_Robot.svg.png">
+<p><strong>Skid Steer:</strong></p>
+<img src="https://www.researchgate.net/publication/304537554/figure/fig1/AS:380261863837696@1467672901371/Kinematics-of-differentially-driven-skid-steering-robot.png">
+<p><strong>Omnidirectional:</strong></p>
+<img src="https://www.researchgate.net/publication/348914328/figure/fig4/AS:987603973189634@1612474544737/Kinematics-of-the-omnidirectional-mobile-base.png">
+<p>And of course...</p>
+<p><strong>Ackermann:</strong></p>
+<img src="https://www.shuffleai.blog/blog/images/blog5/fig3.png">
+<h3 id="ackermann-kinematics"><a class="header" href="#ackermann-kinematics">Ackermann Kinematics</a></h3>
+<p>Because cars use ackermann steering (as any other mechanism would fail at speed), we will only discuss ackermann
+kinematics
+in detail. Conveniently, the kart also uses ackermann steering so all of these equations apply to your real work.</p>
+<p>While one could model vehicle kinematics using all four wheels, it's common to simplify them down even further to just
+two - the bicycle model:</p>
+<img style="width: 100%" src="https://thomasfermi.github.io/Algorithms-for-Automated-Driving/_images/BicycleModelGeometry.svg">
+<p>At this level of simplification, things should be pretty clear. To break it down:</p>
+<ul>
+<li><strong>\( \delta \)</strong>: The angle of our front wheel. In actuality, this is the average of your two front wheels. Note
+that
+because of the right triangle formed by the wheels, the angle of the ICR is actually the same as our front wheel,
+which
+we can exploit.</li>
+<li><strong>R</strong>: The radius of the circle our rear axel is following, aka the current turning radius. This is the single thing
+that identifies the path we will follow.</li>
+<li><strong>L</strong>: Wheelbase, only useful as the opposite side of the right triangle.</li>
+</ul>
+<p>Some things to note:</p>
+<ul>
+<li>The vehicle turns about its rear axle, so we consider the position of the rear axel the position of the robot.</li>
+<li>L is constant, so either \( \delta \) is chosen to find some R, or R is chosen to achieve some \( \delta \).</li>
+<li>Using this model, robot motion must always occur in arcs.</li>
+<li>There is a minimum turning radius a vehicle can make, governed by its wheelbase.</li>
+<li>Velocity does not change turning radius, but it does change if you will slip while making that turn.</li>
+</ul>
+<h2 id="pure-pursuit"><a class="header" href="#pure-pursuit">Pure Pursuit</a></h2>
+<img src="https://thomasfermi.github.io/Algorithms-for-Automated-Driving/_images/PurePursuit_delta_11p3.svg">
+<p>With that model in mind, we can now introduce pure pursuit. Pure pursuit is a path tracker that computes the command
+to reach some target point by simply calculating the arc to that target point, and heading directly towards it.
+With this in mind, it's clear why Ackermann kinematics are useful, as they give us a means to find a steering angle
+given an arc.</p>
+<p>Pure pursuit is a tad more than that, however. It's main trinket is <strong>lookahead distance</strong>. Basically, PP will only
+calculate arcs to points so far away from itself, in order to strike a balance between making sudden turns and slow
+turns. You can think of lookahead distance as a tunable parameter that sets the &quot;aggressiveness&quot; of the karts steering.</p>
+<p>Let's go through a pure pursuit iteration step by step.</p>
+<h3 id="enforce-lookahead"><a class="header" href="#enforce-lookahead">Enforce lookahead</a></h3>
+<p>When using a path with multiple points, the first step would be to find the intersection of the lookahead distance and
+the path, in order to find the target point. For TinyKart we already have the target point, so this step isn't needed.
+However, we still need to include the lookahead distance somehow, else pure pursuit will turn far too slowly.</p>
+<p>To do this, we simply do the following:</p>
+<ol>
+<li>if dist(target) &gt; lookahead
+<ol>
+<li>set target point to lookahead distance, while preserving the same angle. This can be done easily with some trig.</li>
+</ol>
+</li>
+<li>else, target is within lookahead, so just use target.</li>
+</ol>
+<h3 id="calculate-arc-to-target"><a class="header" href="#calculate-arc-to-target">Calculate arc to target</a></h3>
+<img src="https://thomasfermi.github.io/Algorithms-for-Automated-Driving/_images/PurePursuitLawOfSines.svg">
+<p>To calculate the arc we need to follow to reach the target point (which remember, is given by R), we can exploit
+the geometry of the problem.</p>
+<p>To find R, and thus the arc, we can use the law of sines in the geometry above to derive:</p>
+<p>\[ R = {distinceToTarget \over 2\sin(\alpha)} \]</p>
+<h3 id="calculate-steering-angle-for-arc"><a class="header" href="#calculate-steering-angle-for-arc">Calculate steering angle for arc</a></h3>
+<p>Finally, we need to calculate the steering angle required to take the arc described by R.</p>
+<p>By the bike model discussed prior, you can see that the steering angle relates to R by:
+\[ \delta = \arctan({L \over{R}}) \]</p>
+<p>By substituting R for our arc found in the last step, we can solve the equation to find the required steering
+angle \( \delta \).</p>
+<p>Now that we have our steering angle, which is our command, pure pursuit is complete.</p>
+<h3 id="visual"><a class="header" href="#visual">Visual</a></h3>
+<p>For a visual representation of pure pursuit in action, take a look at our pure pursuit implementation for Phoenix:</p>
+<p><video src="https://cdn.discordapp.com/attachments/951248789312786543/1187313960001748992/track_demo.mp4?ex=659fa9cb&is=658d34cb&hm=2761f9ab2154dfa89152a4e8505a1667f35d74e343b4ce60747b4c66beb4a225&" controls></video></p>
+<h3 id="tuning"><a class="header" href="#tuning">Tuning</a></h3>
+<p>Before I hand things off to you, I want to give a brief overview of tuning pure pursuit, since there isn't much media on
+it.</p>
+<p>As mentioned before, lookahead is the main parameter for pure pursuit. For TinyKart, it directly controls the
+aggressiveness
+of a turn, since we drag target points closer to the kart, rather than sampling a closer point on a path. Because of
+this,
+a closer lookahead distance <em>will always</em> lead to a more aggressive turing angle, so long as the target point is farther
+than the lookahead distance.</p>
+<p>Because of this, tuning lookahead on tinykart is rather simple, if tedious:</p>
+<ul>
+<li>If the kart is moving its wheels too little and hitting the outside of turns, lower the lookahead distance</li>
+<li>If the kart is moving its wheels too dramatically and hitting things as a result, raise the lookahead distance</li>
+</ul>
+<p>Generally speaking, a larger lookahead distance should be faster, since turning causes the kart to lose speed from
+friction.</p>
+<h2 id="your-turn-2"><a class="header" href="#your-turn-2">Your turn</a></h2>
+<p>It's finally time for your last assignment! Of course, this will have you writing and tuning your own pure pursuit.
+Build this off of your code from the last chapter. </p>
+<p>Find this line in your loop:</p>
+<pre><code class="language-c++">auto command = pure_pursuit::calculate_command_to_point(tinyKart, target_pt, 1.0);
+</code></pre>
+<p>And replace it with:</p>
+<pre><code class="language-c++">auto command = calculate_command_to_point(tinyKart, target_pt, 1.0);
+</code></pre>
+<p>Then somewhere in your main.cpp, add:</p>
+<pre><code class="language-c++">/// Calculates the command to move the kart to some target point.
+AckermannCommand calculate_command_to_point(const TinyKart *tinyKart, ScanPoint target_point,
+                                            float max_lookahead) {
+ //TODO    
+}
+</code></pre>
+<p>Implement pure pursuit in this function, and test it our with your existing code.</p>
+<p>As a bit of an extra, consider using your past work from chapter 4 to set the throttle component of the command
+proportionally to the distance to the objects in front of the kart.</p>
+<p><strong>Good Luck!</strong></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="onwards"><a class="header" href="#onwards">Onwards</a></h1>
+<p>TODO cover the competition and some ideas</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            MathJax.Hub.Register.StartupHook('End', function() {
+                window.setTimeout(window.print, 100);
+            });
+        });
+        </script>
+
+    </div>
+    </body>
+</html>

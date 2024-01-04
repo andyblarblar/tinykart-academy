@@ -1,0 +1,361 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Pt.2: Pure Pursuit - the tinykart book</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="bom.html"><strong aria-hidden="true">2.</strong> Hardware BOM and Overview</a></li><li class="chapter-item expanded "><a href="installation.html"><strong aria-hidden="true">3.</strong> Chapter 1: Installation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="installation_pio.html"><strong aria-hidden="true">3.1.</strong> PlatformIO</a></li><li class="chapter-item expanded "><a href="installation_git.html"><strong aria-hidden="true">3.2.</strong> Git</a></li><li class="chapter-item expanded "><a href="code_setup.html"><strong aria-hidden="true">3.3.</strong> Setup</a></li></ol></li><li class="chapter-item expanded "><a href="soft_overview.html"><strong aria-hidden="true">4.</strong> Chapter 2: Software Overview</a></li><li class="chapter-item expanded "><a href="lidar.html"><strong aria-hidden="true">5.</strong> Chapter 3: The Baby Lidar</a></li><li class="chapter-item expanded "><a href="kart.html"><strong aria-hidden="true">6.</strong> Chapter 4: The TinyKart</a></li><li class="chapter-item expanded "><a href="auton_intro.html"><strong aria-hidden="true">7.</strong> Chapter 5: The Self Driving Part</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="auton_gap.html"><strong aria-hidden="true">7.1.</strong> Pt.1: Follow the Gap</a></li><li class="chapter-item expanded "><a href="auton_pp.html" class="active"><strong aria-hidden="true">7.2.</strong> Pt.2: Pure Pursuit</a></li></ol></li><li class="chapter-item expanded "><a href="onwards.html"><strong aria-hidden="true">8.</strong> Chapter 6: Onwards</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">the tinykart book</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="path-tracking-pure-pursuit"><a class="header" href="#path-tracking-pure-pursuit">Path Tracking: Pure Pursuit</a></h1>
+<blockquote>
+<p>NOTE: This chapter makes significant use of resources from <a href="https://thomasfermi.github.io/Algorithms-for-Automated-Driving/Control/PurePursuit.html">this article</a>,
+adapted for use in TinyKart. Please take a look there for more details on the math side of things.</p>
+</blockquote>
+<p>Now that we have a target point, all you need to do is find out how to actually get the kart there. This is the
+responsibility of <strong>path trackers</strong>.</p>
+<p>Much like path planners, path trackers come in many varieties, depending on the robot and requirements. For example,
+some planners like Pure Pursuit simply directly head to the target, some like ROS's DWB attempt to avoid obstacles,
+and some use advanced control algorithms such as Model Predictive Control to attempt to also handle vehicle dynamics
+(such as wheel slip). These range in difficulty of implementation from elementary to reasurch.</p>
+<p>In the last chapter, you were using a reference implementation of pure pursuit. In this chapter, you will learn how to
+reimplement this yourself, and get a better idea of how to tune it.</p>
+<h2 id="kinematics"><a class="header" href="#kinematics">Kinematics</a></h2>
+<p>Before we can talk about pure pursuit, we first need to introduce vehicle kinematics. Kinematics is the study of how
+things move without respect to forces (dynamics). For example, the kinematics of a car define where the car will go
+given some steering angle input alone, without considering things like wheel slip that depends on surface friction.
+While far less accurate than using dynamics, robot kinematics gives us a good estimation of how our robot should move
+given some command.</p>
+<p>Because kinematics doesn't depend on forces, it could be said that it instead relies on geometries. This means that
+the physical layout of the robot defines your robot's kinematics. While these are theoretically infinite, they tend to
+come in only a few varieties:</p>
+<p><strong>Differential Drive:</strong></p>
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Differential_Drive_Kinematics_of_a_Wheeled_Mobile_Robot.svg/300px-Differential_Drive_Kinematics_of_a_Wheeled_Mobile_Robot.svg.png">
+<p><strong>Skid Steer:</strong></p>
+<img src="https://www.researchgate.net/publication/304537554/figure/fig1/AS:380261863837696@1467672901371/Kinematics-of-differentially-driven-skid-steering-robot.png">
+<p><strong>Omnidirectional:</strong></p>
+<img src="https://www.researchgate.net/publication/348914328/figure/fig4/AS:987603973189634@1612474544737/Kinematics-of-the-omnidirectional-mobile-base.png">
+<p>And of course...</p>
+<p><strong>Ackermann:</strong></p>
+<img src="https://www.shuffleai.blog/blog/images/blog5/fig3.png">
+<h3 id="ackermann-kinematics"><a class="header" href="#ackermann-kinematics">Ackermann Kinematics</a></h3>
+<p>Because cars use ackermann steering (as any other mechanism would fail at speed), we will only discuss ackermann
+kinematics
+in detail. Conveniently, the kart also uses ackermann steering so all of these equations apply to your real work.</p>
+<p>While one could model vehicle kinematics using all four wheels, it's common to simplify them down even further to just
+two - the bicycle model:</p>
+<img style="width: 100%" src="https://thomasfermi.github.io/Algorithms-for-Automated-Driving/_images/BicycleModelGeometry.svg">
+<p>At this level of simplification, things should be pretty clear. To break it down:</p>
+<ul>
+<li><strong>\( \delta \)</strong>: The angle of our front wheel. In actuality, this is the average of your two front wheels. Note
+that
+because of the right triangle formed by the wheels, the angle of the ICR is actually the same as our front wheel,
+which
+we can exploit.</li>
+<li><strong>R</strong>: The radius of the circle our rear axel is following, aka the current turning radius. This is the single thing
+that identifies the path we will follow.</li>
+<li><strong>L</strong>: Wheelbase, only useful as the opposite side of the right triangle.</li>
+</ul>
+<p>Some things to note:</p>
+<ul>
+<li>The vehicle turns about its rear axle, so we consider the position of the rear axel the position of the robot.</li>
+<li>L is constant, so either \( \delta \) is chosen to find some R, or R is chosen to achieve some \( \delta \).</li>
+<li>Using this model, robot motion must always occur in arcs.</li>
+<li>There is a minimum turning radius a vehicle can make, governed by its wheelbase.</li>
+<li>Velocity does not change turning radius, but it does change if you will slip while making that turn.</li>
+</ul>
+<h2 id="pure-pursuit"><a class="header" href="#pure-pursuit">Pure Pursuit</a></h2>
+<img src="https://thomasfermi.github.io/Algorithms-for-Automated-Driving/_images/PurePursuit_delta_11p3.svg">
+<p>With that model in mind, we can now introduce pure pursuit. Pure pursuit is a path tracker that computes the command
+to reach some target point by simply calculating the arc to that target point, and heading directly towards it.
+With this in mind, it's clear why Ackermann kinematics are useful, as they give us a means to find a steering angle
+given an arc.</p>
+<p>Pure pursuit is a tad more than that, however. It's main trinket is <strong>lookahead distance</strong>. Basically, PP will only
+calculate arcs to points so far away from itself, in order to strike a balance between making sudden turns and slow
+turns. You can think of lookahead distance as a tunable parameter that sets the &quot;aggressiveness&quot; of the karts steering.</p>
+<p>Let's go through a pure pursuit iteration step by step.</p>
+<h3 id="enforce-lookahead"><a class="header" href="#enforce-lookahead">Enforce lookahead</a></h3>
+<p>When using a path with multiple points, the first step would be to find the intersection of the lookahead distance and
+the path, in order to find the target point. For TinyKart we already have the target point, so this step isn't needed.
+However, we still need to include the lookahead distance somehow, else pure pursuit will turn far too slowly.</p>
+<p>To do this, we simply do the following:</p>
+<ol>
+<li>if dist(target) &gt; lookahead
+<ol>
+<li>set target point to lookahead distance, while preserving the same angle. This can be done easily with some trig.</li>
+</ol>
+</li>
+<li>else, target is within lookahead, so just use target.</li>
+</ol>
+<h3 id="calculate-arc-to-target"><a class="header" href="#calculate-arc-to-target">Calculate arc to target</a></h3>
+<img src="https://thomasfermi.github.io/Algorithms-for-Automated-Driving/_images/PurePursuitLawOfSines.svg">
+<p>To calculate the arc we need to follow to reach the target point (which remember, is given by R), we can exploit
+the geometry of the problem.</p>
+<p>To find R, and thus the arc, we can use the law of sines in the geometry above to derive:</p>
+<p>\[ R = {distinceToTarget \over 2\sin(\alpha)} \]</p>
+<h3 id="calculate-steering-angle-for-arc"><a class="header" href="#calculate-steering-angle-for-arc">Calculate steering angle for arc</a></h3>
+<p>Finally, we need to calculate the steering angle required to take the arc described by R.</p>
+<p>By the bike model discussed prior, you can see that the steering angle relates to R by:
+\[ \delta = \arctan({L \over{R}}) \]</p>
+<p>By substituting R for our arc found in the last step, we can solve the equation to find the required steering
+angle \( \delta \).</p>
+<p>Now that we have our steering angle, which is our command, pure pursuit is complete.</p>
+<h3 id="visual"><a class="header" href="#visual">Visual</a></h3>
+<p>For a visual representation of pure pursuit in action, take a look at our pure pursuit implementation for Phoenix:</p>
+<p><video src="https://cdn.discordapp.com/attachments/951248789312786543/1187313960001748992/track_demo.mp4?ex=659fa9cb&is=658d34cb&hm=2761f9ab2154dfa89152a4e8505a1667f35d74e343b4ce60747b4c66beb4a225&" controls></video></p>
+<h3 id="tuning"><a class="header" href="#tuning">Tuning</a></h3>
+<p>Before I hand things off to you, I want to give a brief overview of tuning pure pursuit, since there isn't much media on
+it.</p>
+<p>As mentioned before, lookahead is the main parameter for pure pursuit. For TinyKart, it directly controls the
+aggressiveness
+of a turn, since we drag target points closer to the kart, rather than sampling a closer point on a path. Because of
+this,
+a closer lookahead distance <em>will always</em> lead to a more aggressive turing angle, so long as the target point is farther
+than the lookahead distance.</p>
+<p>Because of this, tuning lookahead on tinykart is rather simple, if tedious:</p>
+<ul>
+<li>If the kart is moving its wheels too little and hitting the outside of turns, lower the lookahead distance</li>
+<li>If the kart is moving its wheels too dramatically and hitting things as a result, raise the lookahead distance</li>
+</ul>
+<p>Generally speaking, a larger lookahead distance should be faster, since turning causes the kart to lose speed from
+friction.</p>
+<h2 id="your-turn"><a class="header" href="#your-turn">Your turn</a></h2>
+<p>It's finally time for your last assignment! Of course, this will have you writing and tuning your own pure pursuit.
+Build this off of your code from the last chapter. </p>
+<p>Find this line in your loop:</p>
+<pre><code class="language-c++">auto command = pure_pursuit::calculate_command_to_point(tinyKart, target_pt, 1.0);
+</code></pre>
+<p>And replace it with:</p>
+<pre><code class="language-c++">auto command = calculate_command_to_point(tinyKart, target_pt, 1.0);
+</code></pre>
+<p>Then somewhere in your main.cpp, add:</p>
+<pre><code class="language-c++">/// Calculates the command to move the kart to some target point.
+AckermannCommand calculate_command_to_point(const TinyKart *tinyKart, ScanPoint target_point,
+                                            float max_lookahead) {
+ //TODO    
+}
+</code></pre>
+<p>Implement pure pursuit in this function, and test it our with your existing code.</p>
+<p>As a bit of an extra, consider using your past work from chapter 4 to set the throttle component of the command
+proportionally to the distance to the objects in front of the kart.</p>
+<p><strong>Good Luck!</strong></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="auton_gap.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="onwards.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="auton_gap.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="onwards.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

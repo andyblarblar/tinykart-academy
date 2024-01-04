@@ -1,0 +1,375 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Chapter 2: Software Overview - the tinykart book</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="bom.html"><strong aria-hidden="true">2.</strong> Hardware BOM and Overview</a></li><li class="chapter-item expanded "><a href="installation.html"><strong aria-hidden="true">3.</strong> Chapter 1: Installation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="installation_pio.html"><strong aria-hidden="true">3.1.</strong> PlatformIO</a></li><li class="chapter-item expanded "><a href="installation_git.html"><strong aria-hidden="true">3.2.</strong> Git</a></li><li class="chapter-item expanded "><a href="code_setup.html"><strong aria-hidden="true">3.3.</strong> Setup</a></li></ol></li><li class="chapter-item expanded "><a href="soft_overview.html" class="active"><strong aria-hidden="true">4.</strong> Chapter 2: Software Overview</a></li><li class="chapter-item expanded "><a href="lidar.html"><strong aria-hidden="true">5.</strong> Chapter 3: The Baby Lidar</a></li><li class="chapter-item expanded "><a href="kart.html"><strong aria-hidden="true">6.</strong> Chapter 4: The TinyKart</a></li><li class="chapter-item expanded "><a href="auton_intro.html"><strong aria-hidden="true">7.</strong> Chapter 5: The Self Driving Part</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="auton_gap.html"><strong aria-hidden="true">7.1.</strong> Pt.1: Follow the Gap</a></li><li class="chapter-item expanded "><a href="auton_pp.html"><strong aria-hidden="true">7.2.</strong> Pt.2: Pure Pursuit</a></li></ol></li><li class="chapter-item expanded "><a href="onwards.html"><strong aria-hidden="true">8.</strong> Chapter 6: Onwards</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">the tinykart book</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="software-overview"><a class="header" href="#software-overview">Software Overview</a></h1>
+<p>Now that we have the codebase setup, let's briefly introduce what we're working with.</p>
+<h2 id="arduino"><a class="header" href="#arduino">Arduino</a></h2>
+<p>Tinykart's embedded software is based on Arduino. If you somehow haven't heard of it, Arduino is an extremely high level
+(as in simple) embedded programming framework. It's designed to allow for beginners and hobbyists to engage with
+embedded
+programming without spending a semester reading docs. If you've worked with Arduino before, you've probably worked with
+<em>the</em> Arduino, the UNO v3:</p>
+<img src="https://store.arduino.cc/cdn/shop/products/A000066_03.front_571x429.jpg?v=1629815860"/>
+<p>What most don't know is that Arduino is actually completely independent of the UNO, mega, and other &quot;Arduino&quot; branded
+dev-boards. In this respect, Arduino is simply a C++ library, similar to something like ROS.</p>
+<p>So how does this work then? Well, Arduino can be ported between boards using what are called &quot;Cores&quot;. Cores are
+basically
+just implementations of the Arduino API (think <code>writeDigital()</code>, <code>readAnalog()</code> etc.) using different, lower-level
+libraries specific to some board or vendor. This way, you can use Arduino the same way across boards, while the actual
+implementation is free to change (encapsulation, for those in SWE).</p>
+<p>Because we are using the STM32H723GZ, we will be using <a href="https://github.com/stm32duino/Arduino_Core_STM32">STM32duino</a>,
+an
+implementation of Arduino for STM32 MCU. This Arduino core is based on the STM32Cube HAL, something the more experienced
+among you may have seen before. While not required, this does mean that we can actually use the STM HAL <em>alongside</em>
+Arduino,
+something that is used considerably behind the scenes, although you won't need to touch it.</p>
+<p>So what do we have available to us?</p>
+<ul>
+<li>C++17</li>
+<li>The Arduino API</li>
+<li>The STM32 HAL</li>
+<li>The C standard library, via newlib</li>
+<li>The C++ standard library (or at least large portions of it), via newlib</li>
+</ul>
+<h2 id="platformio"><a class="header" href="#platformio">PlatformIO</a></h2>
+<p>PlatformIO is a build system and project configuration platform that works at a level above frameworks like Arduino or
+the HAL.
+While I won't get too far into the details here, PIO generally allows for embedded projects to be much more flexible by
+allowing
+the use of different tools like IDEs, while also providing a dependency manager similar to the Arduino IDE.</p>
+<p>One of the strongest features of PIO is its project structure, which allows for much more flexible projects than Arduino
+IDE. This section will describe how to navigate this project structure.</p>
+<p>As of the time of writing, the tinykart repo looks like this:</p>
+<pre><code>├── docs
+│   ├── io_setup.md
+│   ├── pinout.md
+│   ├── references.md
+│   └── refrence.pdf
+├── include
+│   ├── dma.hpp
+│   ├── logger.hpp
+│   ├── pins.hpp
+│   └── uart.hpp
+├── lib
+│   ├── gap_follow
+│   │   ├── common.hpp
+│   │   ├── f1tenth_gap_follow.cpp
+│   │   ├── f1tenth_gap_follow.hpp
+│   │   ├── naive_gap_follow.cpp
+│   │   └── naive_gap_follow.hpp
+│   ├── ld06
+│   │   ├── ld06.cpp
+│   │   └── ld06.hpp
+│   ├── pure_pursuit
+│   │   └── pure_pursuit.hpp
+│   ├── README
+│   └── tinykart
+│       ├── esc.hpp
+│       └── kart.hpp
+├── platformio.ini
+├── README.md
+├── src
+│   ├── dma.cpp
+│   ├── main.cpp
+│   └── stm32h7xx_hal_msp.c
+└── test
+    └── README
+</code></pre>
+<ul>
+<li><strong>docs</strong>: Contains documentation about the implementation of tinykart, and other useful references.</li>
+<li><strong>include</strong>: Contains all headers to be only used with tinykart.</li>
+<li><strong>lib</strong>: Contains all local libraries. Allows for us to extract code that could work outside of this tinykart
+implementation, making things more extensible and clean.
+<ul>
+<li><strong>gap_follow</strong>: My reference autonomous routines. You will be designing your own implementation of these.</li>
+<li><strong>ldo6</strong>: A driver for the LD06 LiDAR. This is provided for your convience, and you are not expected to know how
+this
+works.</li>
+<li><strong>pure_pursuit</strong>: Another reference implementation for you, to be redone for your own implementation.</li>
+<li><strong>tinykart</strong>: Utilities for accessing the RC car hardware. While you will not be implementing these, they will be
+discussed.</li>
+</ul>
+</li>
+<li><strong>platformio.ini</strong>: PIO's configuration file. While you will not be required to touch this, for your own
+implementation
+this
+is where you would add additional libraries or board configs.</li>
+<li><strong>src</strong>: tinykart implementation files, using the include headers.
+<ul>
+<li><strong>dma.cpp</strong>: DMA reader implementation. Don't worry about this</li>
+<li><strong>main.cpp</strong>: Arduino main file. This is where the magic happens.</li>
+<li><strong>stm32h7xx_hal_msp.c</strong>: Handles configuring the HAL for areas where we can't use Arduino, like the LiDAR. Don't
+worry
+about this, unless you are adding more sensors and also cannot use Arduino.</li>
+</ul>
+</li>
+<li><strong>test</strong>: Unit tests go here, although these are TBD.</li>
+</ul>
+<h2 id="tinykart-extensions"><a class="header" href="#tinykart-extensions">TinyKart &quot;Extensions&quot;</a></h2>
+<p>To make things easier for you, we provide a bit of a framework for TinyKart, containing implementations of the harder
+parts of using Arduino to interface with the required hardware. This section will contain a brief explanation of these
+components.</p>
+<h3 id="tinykart-struct"><a class="header" href="#tinykart-struct">TinyKart struct</a></h3>
+<p>The <code>TinyKart</code> struct, implemented in the tinykart local lib, is an abstraction for working with the RC car hardware. It
+lives in global scope:</p>
+<pre><code class="language-c++">// Robot control
+TinyKart *tinyKart;
+</code></pre>
+<p>You can use it to ex. move the steering to a certain angle, or set the throttle or brake:</p>
+<pre><code class="language-c++">                    // Actuate kart
+                    tinyKart-&gt;set_forward(command.throttle_percent);
+                    tinyKart-&gt;set_steering(command.steering_angle);
+</code></pre>
+<h3 id="lidar-utilities"><a class="header" href="#lidar-utilities">LiDAR utilities</a></h3>
+<p>The <code>LD06</code> class is a driver for the LD06 Lidar. <code>ScanBuilder</code> is a class for working with the
+raw data returned from the driver. These both live in global scope:</p>
+<pre><code class="language-c++">LD06 ld06{};
+
+// Scan processor
+ScanBuilder scan_builder{360 - 90, 90, ScanPoint{0.1524, 0}};
+</code></pre>
+<p>These will be introduced further in the next chapter.</p>
+<h3 id="logger"><a class="header" href="#logger">Logger</a></h3>
+<blockquote>
+<p>NOTE: Because of newlib restrictions, attempting to print a floating point number will hardfault</p>
+</blockquote>
+<p>Because we need to use the UART interrupt for the LiDAR driver, we are unable to use the Serial library. Because print
+debugging is quite useful, we reimplement a basic equivalent. The equivalent to <code>Serial</code> is now a global <code>logger</code>
+defined
+in logger.hpp.</p>
+<p>Ex. to printf:</p>
+<pre><code class="language-c++">
+                    logger.printf(&quot;Target point: (%hi,%hi)\n&quot;, (int16_t) (target_pt.x * 1000),
+                                  (int16_t) (target_pt.y * 1000));
+
+</code></pre>
+<p>Unlike the Serial library, this printf is actually non-blocking, and uses interrupts to process the message behind the
+scenes. This means that there will be some lag before the message is printed, as it needs to be queued for
+synchronisation
+purposes.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="code_setup.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="lidar.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="code_setup.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="lidar.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
