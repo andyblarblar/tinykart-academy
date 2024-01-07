@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Git - the tinykart book</title>
+        <title>Why TinyKart - the tinykart book</title>
 
 
         <!-- Custom HTML head -->
@@ -90,7 +90,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="why.html"><strong aria-hidden="true">1.1.</strong> Why TinyKart</a></li></ol></li><li class="chapter-item expanded "><a href="bom.html"><strong aria-hidden="true">2.</strong> Hardware BOM and Overview</a></li><li class="chapter-item expanded "><a href="installation.html"><strong aria-hidden="true">3.</strong> Chapter 1: Installation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="installation_pio.html"><strong aria-hidden="true">3.1.</strong> PlatformIO</a></li><li class="chapter-item expanded "><a href="installation_git.html" class="active"><strong aria-hidden="true">3.2.</strong> Git</a></li><li class="chapter-item expanded "><a href="code_setup.html"><strong aria-hidden="true">3.3.</strong> Setup</a></li></ol></li><li class="chapter-item expanded "><a href="soft_overview.html"><strong aria-hidden="true">4.</strong> Chapter 2: Software Overview</a></li><li class="chapter-item expanded "><a href="lidar.html"><strong aria-hidden="true">5.</strong> Chapter 3: The Baby Lidar</a></li><li class="chapter-item expanded "><a href="kart.html"><strong aria-hidden="true">6.</strong> Chapter 4: The TinyKart</a></li><li class="chapter-item expanded "><a href="auton_intro.html"><strong aria-hidden="true">7.</strong> Chapter 5: The Self Driving Part</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="auton_gap.html"><strong aria-hidden="true">7.1.</strong> Pt.1: Follow the Gap</a></li><li class="chapter-item expanded "><a href="auton_pp.html"><strong aria-hidden="true">7.2.</strong> Pt.2: Pure Pursuit</a></li></ol></li><li class="chapter-item expanded "><a href="onwards.html"><strong aria-hidden="true">8.</strong> Chapter 6: Onwards</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="why.html" class="active"><strong aria-hidden="true">1.1.</strong> Why TinyKart</a></li></ol></li><li class="chapter-item expanded "><a href="bom.html"><strong aria-hidden="true">2.</strong> Hardware BOM and Overview</a></li><li class="chapter-item expanded "><a href="installation.html"><strong aria-hidden="true">3.</strong> Chapter 1: Installation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="installation_pio.html"><strong aria-hidden="true">3.1.</strong> PlatformIO</a></li><li class="chapter-item expanded "><a href="installation_git.html"><strong aria-hidden="true">3.2.</strong> Git</a></li><li class="chapter-item expanded "><a href="code_setup.html"><strong aria-hidden="true">3.3.</strong> Setup</a></li></ol></li><li class="chapter-item expanded "><a href="soft_overview.html"><strong aria-hidden="true">4.</strong> Chapter 2: Software Overview</a></li><li class="chapter-item expanded "><a href="lidar.html"><strong aria-hidden="true">5.</strong> Chapter 3: The Baby Lidar</a></li><li class="chapter-item expanded "><a href="kart.html"><strong aria-hidden="true">6.</strong> Chapter 4: The TinyKart</a></li><li class="chapter-item expanded "><a href="auton_intro.html"><strong aria-hidden="true">7.</strong> Chapter 5: The Self Driving Part</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="auton_gap.html"><strong aria-hidden="true">7.1.</strong> Pt.1: Follow the Gap</a></li><li class="chapter-item expanded "><a href="auton_pp.html"><strong aria-hidden="true">7.2.</strong> Pt.2: Pure Pursuit</a></li></ol></li><li class="chapter-item expanded "><a href="onwards.html"><strong aria-hidden="true">8.</strong> Chapter 6: Onwards</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -175,25 +175,97 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="git"><a class="header" href="#git">Git</a></h1>
-<p>Next, let's install Git, the ubiquitous version control system. If you're on Linux, this is likely already installed.
-If you're on Windows, you likely don't.</p>
-<h2 id="linux"><a class="header" href="#linux">Linux</a></h2>
-<p>For Linux users, it's best to install Git using a package manager, such as through apt on debain:
-<code>sudo apt install git</code></p>
-<p>If you aren't on a debian based distro, then lets be honest, you don't need me to explain how to install Git.</p>
-<h2 id="windows"><a class="header" href="#windows">Windows</a></h2>
-<p>For Windows users, run the Git installer from the project's <a href="https://git-scm.com">website</a>.</p>
+                        <h1 id="why-tinykart"><a class="header" href="#why-tinykart">Why TinyKart</a></h1>
+<blockquote>
+<p>Note: this page is mostly for those more experienced, and are curious why TinyKart exists. If you're a student
+just looking to work on a TinyKart, disregard this page.</p>
+</blockquote>
+<p>TinyKart may appear to be a bit redundant at first, so I want to justify why ISC created this program, and it's larger
+goals.</p>
+<h2 id="the-background"><a class="header" href="#the-background">The Background</a></h2>
+<p>Before TinyKart, being onboarded into ISC was a rough process. New members were essentially just thrown unto a project
+and left to fend for themselves. While this did yield a few generational talents that ended up leading the team through
+each of its generations through their sheer motivation, this model ultimately limited the clubs scope.</p>
+<p>Because of the classes at UofM Dearborn, it is functionally impossible for students under senior year to participate in
+robotics purely off knowledge from courses. In the case of CS majors, <em>it is literally impossible</em>, as all robotics
+courses are in a different department. This is why, if the club has no program, talent in ISC largely originates from
+pure tenacity and the loyal efforts of generally about 3 or so current members acting as mentors. This leads to teams
+around 8-10 in size.</p>
+<h2 id="the-problem"><a class="header" href="#the-problem">The Problem</a></h2>
+<p>So why is this a problem? After all, ISC existed for years as essentially just a small group and did pretty well.
+While there are a few perspectives on this, I'll give mine as the software lead.</p>
+<h3 id="bus-factor-or-program-stability"><a class="header" href="#bus-factor-or-program-stability">Bus factor, or program stability</a></h3>
+<blockquote>
+<p><em>Bus factor (noun): the number of people that need to get hit by a bus before your project is completely doomed.</em></p>
+</blockquote>
+<p>I'm stealing this term from the wonderful <a href="https://abseil.io/resources/swe-book/html/toc.html">Google SWE book</a>. Bus
+factor refers to, rather crudely, the number of people on
+a project that can be hit by a bus before the project collapses. This is really just another way of calling someone a
+single point of failure, weather that be in their knowledge of some problem, or their organisational knowledge and
+rapport.</p>
+<p>ISC's tendency to have a small, highly capable, ingroup leads it to be highly vulnerable to SPOF. This is rather
+self-explanatory, as with a small team it simply isn't feasible to distribute work among members, while the project is
+so challenging that its basically luck to find people capable of understanding everything.</p>
+<p>While one can trivially expect this to cause issues when the bus hits, like missing deadlines, it causes a more
+existential issue.</p>
+<h4 id="time-is-a-bus"><a class="header" href="#time-is-a-bus">Time is a bus</a></h4>
+<p>Every four years or so, people graduate. This means that, however careful you are, your SPOF <em>will happen</em> eventually.
+When your SPOF leaves, it's up to luck that someone puts in the time to take their place, only to become a new SPOF.</p>
+<p>The answer to this issue is simple, of course - just train members.</p>
+<p>In reality though, it's far more difficult. This is because the SPOF <em>is the only one who can train members</em>. This SPOF
+is also the one who is making the project possible however, so it's unreasonable to expect them to both mentor a ton
+of people and fulfill their work. This leads to a hideous cycle, where every four years the SPOF graduates, everyone
+who doesn't have the ability to take their spot leaves, a new SPOF is created, the club finally seems to get traction,
+they graduate, and the cycle continues. Indeed, this is the cycle the team has been in for the last four years.</p>
+<p><strong>TL;DR, a small team means you cannot train members, which means you cannot do cool things.</strong></p>
+<h2 id="the-solution"><a class="header" href="#the-solution">The Solution</a></h2>
+<p>TinyKart is our answer to the above problem.</p>
+<p>In its simplest form, TinyKart is a course designed to bring a ton of people into the labspace, and get them to at least
+a base level understanding of robotics. From there, those that remain, for there will always be attrition, will have the
+chance to work in a team and experiment with software on a project far simpler and less daunting than large projects.</p>
+<p>The goal of this is to break the cycle by iteratively growing the club body year by year. Critically, this doesn't mean
+that we want TinyKart to teach all that the team needs. Rather, it's just an interesting problem to get people in the
+labspace and up to a certain level of knowledge. Once they go to learn the big projects, they should be able to avoid the
+SPOF by means of numbers. Will this avoid a SPOF entirely? Probably not. But by virtue of pure numbers, it should be
+easier to, at least, train up the next year of TinyKart members, to avoid the team completely falling apart when the SPOF
+leaves.</p>
+<p>With this in mind, TinyKart has a few major choices:</p>
+<ul>
+<li>It should have minimal prerequisites</li>
+<li>It should have fallbacks, so if someone fails they don't get left behind</li>
+<li>It should be doable <em>without meetings at all if required</em>
+<ul>
+<li>Hence, this book</li>
+</ul>
+</li>
+<li>It should focus on getting people to work together at ISC first, before critically challenging people
+<ul>
+<li>This is why we don't cover localisation</li>
+</ul>
+</li>
+<li>It should allow for more exploratory work later, after people are more committed to the club socially, and thus more
+willing to stick through hard parts</li>
+</ul>
+<h3 id="why-not-f110"><a class="header" href="#why-not-f110">Why not F1/10?</a></h3>
+<p>I want to briefly address why we didn't just use F1/10, since this question comes up a lot. While F1/10 is great,
+it doesn't really meet the program needs above. For two main reasons.</p>
+<p>First, It's just very expensive. The f1/10 platform is like $1500 all included, which is just crazy. TinyKart is around
+$350 all things included, which is far more scalable for us.</p>
+<p>Second, because we don't want to get too deep into robotics for sake of accessibility, we want to avoid ROS. I love ROS,
+but it has a crazy learning curve, especially because you need to learn quite a lot of C++ to use it. Most of our new
+members barely even know C++, and often have only had one programming course. Conveniently, they have also almost all 
+at least heard of Arduino, so it makes sense for us to exploit that. Because of this we also have to run with microcontrollers,
+which conveniently also simplifies the hardware considerably.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="installation_pio.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="intro.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="code_setup.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="bom.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -203,11 +275,11 @@ If you're on Windows, you likely don't.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="installation_pio.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="intro.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="code_setup.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="bom.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

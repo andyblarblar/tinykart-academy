@@ -90,7 +90,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html" class="active"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="bom.html"><strong aria-hidden="true">2.</strong> Hardware BOM and Overview</a></li><li class="chapter-item expanded "><a href="installation.html"><strong aria-hidden="true">3.</strong> Chapter 1: Installation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="installation_pio.html"><strong aria-hidden="true">3.1.</strong> PlatformIO</a></li><li class="chapter-item expanded "><a href="installation_git.html"><strong aria-hidden="true">3.2.</strong> Git</a></li><li class="chapter-item expanded "><a href="code_setup.html"><strong aria-hidden="true">3.3.</strong> Setup</a></li></ol></li><li class="chapter-item expanded "><a href="soft_overview.html"><strong aria-hidden="true">4.</strong> Chapter 2: Software Overview</a></li><li class="chapter-item expanded "><a href="lidar.html"><strong aria-hidden="true">5.</strong> Chapter 3: The Baby Lidar</a></li><li class="chapter-item expanded "><a href="kart.html"><strong aria-hidden="true">6.</strong> Chapter 4: The TinyKart</a></li><li class="chapter-item expanded "><a href="auton_intro.html"><strong aria-hidden="true">7.</strong> Chapter 5: The Self Driving Part</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="auton_gap.html"><strong aria-hidden="true">7.1.</strong> Pt.1: Follow the Gap</a></li><li class="chapter-item expanded "><a href="auton_pp.html"><strong aria-hidden="true">7.2.</strong> Pt.2: Pure Pursuit</a></li></ol></li><li class="chapter-item expanded "><a href="onwards.html"><strong aria-hidden="true">8.</strong> Chapter 6: Onwards</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html" class="active"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="why.html"><strong aria-hidden="true">1.1.</strong> Why TinyKart</a></li></ol></li><li class="chapter-item expanded "><a href="bom.html"><strong aria-hidden="true">2.</strong> Hardware BOM and Overview</a></li><li class="chapter-item expanded "><a href="installation.html"><strong aria-hidden="true">3.</strong> Chapter 1: Installation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="installation_pio.html"><strong aria-hidden="true">3.1.</strong> PlatformIO</a></li><li class="chapter-item expanded "><a href="installation_git.html"><strong aria-hidden="true">3.2.</strong> Git</a></li><li class="chapter-item expanded "><a href="code_setup.html"><strong aria-hidden="true">3.3.</strong> Setup</a></li></ol></li><li class="chapter-item expanded "><a href="soft_overview.html"><strong aria-hidden="true">4.</strong> Chapter 2: Software Overview</a></li><li class="chapter-item expanded "><a href="lidar.html"><strong aria-hidden="true">5.</strong> Chapter 3: The Baby Lidar</a></li><li class="chapter-item expanded "><a href="kart.html"><strong aria-hidden="true">6.</strong> Chapter 4: The TinyKart</a></li><li class="chapter-item expanded "><a href="auton_intro.html"><strong aria-hidden="true">7.</strong> Chapter 5: The Self Driving Part</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="auton_gap.html"><strong aria-hidden="true">7.1.</strong> Pt.1: Follow the Gap</a></li><li class="chapter-item expanded "><a href="auton_pp.html"><strong aria-hidden="true">7.2.</strong> Pt.2: Pure Pursuit</a></li></ol></li><li class="chapter-item expanded "><a href="onwards.html"><strong aria-hidden="true">8.</strong> Chapter 6: Onwards</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -176,14 +176,69 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="introduction-to-the-tinykart-"><a class="header" href="#introduction-to-the-tinykart-">Introduction to <em>The TinyKart ™️</em></a></h1>
-<p>TODO introduce the idea of the project, its goals, and audience</p>
+<img src="assets/tinykart-misc.jpg">
+<p>TinyKart is the <a href="http://iscumd.com">Intelligent System Club's</a> entry level project to introduce new members to 
+several areas of robotics, while having a strong supporting codebase to ensure it does not become overwhelming.</p>
+<p>This book serves both as a reference and course for anyone looking to make their own TinyKart, or just curious on how 
+any part of it works.</p>
+<p><strong>Some topics covered by this book:</strong></p>
+<ul>
+<li>Setting up an Arduino environment in PlatformIO</li>
+<li>LiDARs, and processing their data</li>
+<li>UART communication</li>
+<li>Interacting with motors</li>
+<li>Ackermann kinematic models</li>
+<li>A basic autonomy stack built around sense-think-act:
+<ul>
+<li>Basic reactionary planners</li>
+<li>Pure Pursuit</li>
+</ul>
+</li>
+</ul>
+<p>By the end of this book, you will have created your own implementation of a reference TinyKart. Armed with your newfound 
+knowledge, you will then expand on what you've made, and race against other students!</p>
+<h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
+<p>While this book assumes little of the reader outside a desire to learn, there are a few things we have to require:</p>
+<ul>
+<li>A Windows or Linux computer
+<ul>
+<li>Mac may work, but is not tested</li>
+</ul>
+</li>
+<li>Basic working knowledge of C++
+<ul>
+<li>This book is about robotics, not C++. The C++ used is not very complex, but may require some googling if syntax is 
+new to you. Additionally, the codebase makes use of modern C++ features like std::optional. When relevant, links to
+external resources are provided for your reference.</li>
+</ul>
+</li>
+<li>Very basic electrical knowledge
+<ul>
+<li>If you know what 5V and ground are, you're good.</li>
+</ul>
+</li>
+</ul>
+<h2 id="notable-topics-not-covered"><a class="header" href="#notable-topics-not-covered">Notable topics not covered</a></h2>
+<p>TinyKart is deliberately left basic, to fill the gap between something like E100 and F1/10. Because of this, a few major
+topics in mobile robotics are not covered, and are best learned through other media:</p>
+<ul>
+<li>Odometry
+<ul>
+<li>Localisation</li>
+<li>SLAM and VSLAM</li>
+</ul>
+</li>
+<li>Computer vision</li>
+<li>Control theory</li>
+<li>DSP</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
 
-                            <a rel="next prefetch" href="bom.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="why.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -194,7 +249,7 @@
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
 
-                    <a rel="next prefetch" href="bom.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="why.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

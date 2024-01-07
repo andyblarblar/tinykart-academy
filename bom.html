@@ -90,7 +90,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="bom.html" class="active"><strong aria-hidden="true">2.</strong> Hardware BOM and Overview</a></li><li class="chapter-item expanded "><a href="installation.html"><strong aria-hidden="true">3.</strong> Chapter 1: Installation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="installation_pio.html"><strong aria-hidden="true">3.1.</strong> PlatformIO</a></li><li class="chapter-item expanded "><a href="installation_git.html"><strong aria-hidden="true">3.2.</strong> Git</a></li><li class="chapter-item expanded "><a href="code_setup.html"><strong aria-hidden="true">3.3.</strong> Setup</a></li></ol></li><li class="chapter-item expanded "><a href="soft_overview.html"><strong aria-hidden="true">4.</strong> Chapter 2: Software Overview</a></li><li class="chapter-item expanded "><a href="lidar.html"><strong aria-hidden="true">5.</strong> Chapter 3: The Baby Lidar</a></li><li class="chapter-item expanded "><a href="kart.html"><strong aria-hidden="true">6.</strong> Chapter 4: The TinyKart</a></li><li class="chapter-item expanded "><a href="auton_intro.html"><strong aria-hidden="true">7.</strong> Chapter 5: The Self Driving Part</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="auton_gap.html"><strong aria-hidden="true">7.1.</strong> Pt.1: Follow the Gap</a></li><li class="chapter-item expanded "><a href="auton_pp.html"><strong aria-hidden="true">7.2.</strong> Pt.2: Pure Pursuit</a></li></ol></li><li class="chapter-item expanded "><a href="onwards.html"><strong aria-hidden="true">8.</strong> Chapter 6: Onwards</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="why.html"><strong aria-hidden="true">1.1.</strong> Why TinyKart</a></li></ol></li><li class="chapter-item expanded "><a href="bom.html" class="active"><strong aria-hidden="true">2.</strong> Hardware BOM and Overview</a></li><li class="chapter-item expanded "><a href="installation.html"><strong aria-hidden="true">3.</strong> Chapter 1: Installation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="installation_pio.html"><strong aria-hidden="true">3.1.</strong> PlatformIO</a></li><li class="chapter-item expanded "><a href="installation_git.html"><strong aria-hidden="true">3.2.</strong> Git</a></li><li class="chapter-item expanded "><a href="code_setup.html"><strong aria-hidden="true">3.3.</strong> Setup</a></li></ol></li><li class="chapter-item expanded "><a href="soft_overview.html"><strong aria-hidden="true">4.</strong> Chapter 2: Software Overview</a></li><li class="chapter-item expanded "><a href="lidar.html"><strong aria-hidden="true">5.</strong> Chapter 3: The Baby Lidar</a></li><li class="chapter-item expanded "><a href="kart.html"><strong aria-hidden="true">6.</strong> Chapter 4: The TinyKart</a></li><li class="chapter-item expanded "><a href="auton_intro.html"><strong aria-hidden="true">7.</strong> Chapter 5: The Self Driving Part</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="auton_gap.html"><strong aria-hidden="true">7.1.</strong> Pt.1: Follow the Gap</a></li><li class="chapter-item expanded "><a href="auton_pp.html"><strong aria-hidden="true">7.2.</strong> Pt.2: Pure Pursuit</a></li></ol></li><li class="chapter-item expanded "><a href="onwards.html"><strong aria-hidden="true">8.</strong> Chapter 6: Onwards</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -175,14 +175,48 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="hardware"><a class="header" href="#hardware">Hardware</a></h1>
-<p>TODO cover what hardware is required, and explain its role </p>
+                        <h1 id="hardware-bom"><a class="header" href="#hardware-bom">Hardware BOM</a></h1>
+<blockquote>
+<p>Note: If you are doing this with ISC, we already have this hardware available.</p>
+</blockquote>
+<h2 id="kart"><a class="header" href="#kart">Kart</a></h2>
+<blockquote>
+<p>est. cost: $200</p>
+</blockquote>
+<img src="https://traxxas.com/sites/default/files/images/58024-Slash-3qtr-Front-REDR_m.jpg">
+<p>We use the Traxxas Slash as our platform. Unfortunately, it seems like it may no longer be available, so any brushed
+Traxxas RC car should also work. The slash was chosen for its size, but other RC cars should also be reasonable.
+The only part of the codebase that depends on the RC car is the ESC control, which we've found to not be portable to
+some other brand ESCs in the past. It may be portable with some work, however.</p>
+<p>Note that you will also need a 2s LiPO.</p>
+<h2 id="lidar"><a class="header" href="#lidar">LiDAR</a></h2>
+<blockquote>
+<p>est. cost: $100</p>
+</blockquote>
+<img src="https://www.inno-maker.com/wp-content/uploads/2020/11/1.jpg">
+<p>We use the <a href="https://www.inno-maker.com/product/lidar-ld06/">LD06</a> for our LiDAR. The driver will only work with this.</p>
+<h2 id="nucleo"><a class="header" href="#nucleo">Nucleo</a></h2>
+<blockquote>
+<p>est. cost: $30</p>
+</blockquote>
+<img src="https://www.st.com/bin/ecommerce/api/image.PF268321.en.feature-description-include-personalized-no-cpn-medium.jpg">
+<p>We use the <a href="https://www.st.com/en/evaluation-tools/nucleo-h723zg.html">STM32 H723ZG nucleo</a> as our microcontroller.
+Pretty much any H7 should work, although pins may need to be reassigned.</p>
+<p>Because we use the HAL in the background, some headers would need to be changed to use other series boards, like
+F4 or something. Porting to non-ST boards will require re-writing the logger.hpp and dma files.</p>
+<h1 id="misc"><a class="header" href="#misc">Misc.</a></h1>
+<p>You should also have:</p>
+<ul>
+<li>A breadboard or something similar</li>
+<li>Some male to male jumper wires</li>
+<li>A micro usb cable</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="intro.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="why.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
@@ -196,7 +230,7 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="intro.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="why.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
