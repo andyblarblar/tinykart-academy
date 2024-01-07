@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cassert"
+#include "Arduino.h"
 
 /// Traxxas XL5 ESC control.
 ///
