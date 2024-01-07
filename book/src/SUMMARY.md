@@ -1,6 +1,7 @@
 # Summary
 
 - [Introduction](./intro.md)
+  - [Why TinyKart](./why.md)
 - [Hardware BOM and Overview](./bom.md)
 - [Chapter 1: Installation](./installation.md)
     - [PlatformIO](./installation_pio.md)

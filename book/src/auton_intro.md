@@ -1,5 +1,7 @@
 # The Part Where we Make it Move
 
+<video src="http://www.iscumd.com/images/tk-run.webm" autoplay loop></video>
+
 Ladies, gentleman, baby lidar - it's finally time to make TinyKart autonomous!
 
 This is going to be a multipart process, and be quite a bit more involved than the prior sections. This is why we're
