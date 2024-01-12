@@ -77,6 +77,7 @@ void loop() {
 
                 // If object is 45cm in front of kart, stop (0.0 means bad point)
                 if (front_obj_dist != 0.0 && front_obj_dist < 0.45 + 0.1524) {
+                    logger.printf("Stopping because of object: %himm in front! \n", (int16_t) (front_obj_dist * 1000));
                     tinyKart->pause();
                     digitalWrite(LED_YELLOW, HIGH);
                 }
@@ -87,7 +88,7 @@ void loop() {
                 if (maybe_target_pt) {
                     auto target_pt = *maybe_target_pt;
 
-                    logger.printf("Target point: (%hi,%hi)\n", (int16_t) (target_pt.x * 1000),
+                    logger.printf("Target point: (%hi, %hi)\n", (int16_t) (target_pt.x * 1000),
                                   (int16_t) (target_pt.y * 1000));
 
                     // Find command to drive to point

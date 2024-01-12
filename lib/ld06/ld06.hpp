@@ -209,8 +209,10 @@ public:
                 y /= 1000;
 
                 // Apply lidar offset
-                x += lidar_offset.x;
-                y += lidar_offset.y;
+                if (x != 0 && y != 0) {
+                    x += lidar_offset.x;
+                    y += lidar_offset.y;
+                }
 
                 buffer.push_back(ScanPoint{x, y});
             }
