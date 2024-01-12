@@ -274,14 +274,14 @@ tinyKart-&gt;set_steering(command.steering_angle);
 </code></pre>
 <p>Feel free to explore the other methods on the class, as they allow for movement in other ways, such as in reverse.</p>
 <p>While this high level API is all you will be working with for the autonomy, I want to briefly show how its implemented:</p>
-<pre><code class="language-c++">    /// Sets the esc to power forward with some 0.0-1.0 percent.
+<pre><code class="language-c++">
+    /// Sets the esc to power forward with some 0.0-1.0 percent.
     void set_forward(float power) const {
         assert(power &lt;= 1.0 &amp;&amp; power &gt;= 0.0);
 
         // Forward is 1.5-2.0ms periods
         auto value = uint16_t(((1.5 + power * 0.5) / period) * max_pwm_duty);
         analogWrite(pwm_pin, value);
-    }
 </code></pre>
 <p>As you can see, its actually rather simple, thanks to Arduino. I want to untangle that second line for you, since
 there's

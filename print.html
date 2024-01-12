@@ -571,9 +571,9 @@ lives in global scope:</p>
 TinyKart *tinyKart;
 </code></pre>
 <p>You can use it to ex. move the steering to a certain angle, or set the throttle or brake:</p>
-<pre><code class="language-c++">                    // Actuate kart
+<pre><code class="language-c++">
+                    // Actuate kart
                     tinyKart-&gt;set_forward(command.throttle_percent);
-                    tinyKart-&gt;set_steering(command.steering_angle);
 </code></pre>
 <h3 id="lidar-utilities"><a class="header" href="#lidar-utilities">LiDAR utilities</a></h3>
 <p>The <code>LD06</code> class is a driver for the LD06 Lidar. <code>ScanBuilder</code> is a class for working with the
@@ -593,10 +593,10 @@ debugging is quite useful, we reimplement a basic equivalent. The equivalent to 
 defined
 in logger.hpp.</p>
 <p>Ex. to printf:</p>
-<pre><code class="language-c++">
-                    logger.printf(&quot;Target point: (%hi,%hi)\n&quot;, (int16_t) (target_pt.x * 1000),
-                                  (int16_t) (target_pt.y * 1000));
+<pre><code class="language-c++">                    auto target_pt = *maybe_target_pt;
 
+                    logger.printf(&quot;Target point: (%hi, %hi)\n&quot;, (int16_t) (target_pt.x * 1000),
+                                  (int16_t) (target_pt.y * 1000));
 </code></pre>
 <p>Unlike the Serial library, this printf is actually non-blocking, and uses interrupts to process the message behind the
 scenes. This means that there will be some lag before the message is printed, as it needs to be queued for
@@ -804,8 +804,10 @@ and is done on actual industrial robots.</p>
                 y /= 1000;
 
                 // Apply lidar offset
-                x += lidar_offset.x;
-                y += lidar_offset.y;
+                if (x != 0 &amp;&amp; y != 0) {
+                    x += lidar_offset.x;
+                    y += lidar_offset.y;
+                }
 
                 buffer.push_back(ScanPoint{x, y});
             }
@@ -817,8 +819,6 @@ and is done on actual industrial robots.</p>
             return std::move(buffer);
         }
 
-        return std::nullopt;
-    }
 </code></pre>
 <p>In the tinykart default implementation, this is configured to read from -90 to 90 degrees:</p>
 <pre><code class="language-c++">ScanBuilder scan_builder{360 - 90, 90, ScanPoint{0.1524, 0}};
@@ -974,14 +974,14 @@ tinyKart-&gt;set_steering(command.steering_angle);
 </code></pre>
 <p>Feel free to explore the other methods on the class, as they allow for movement in other ways, such as in reverse.</p>
 <p>While this high level API is all you will be working with for the autonomy, I want to briefly show how its implemented:</p>
-<pre><code class="language-c++">    /// Sets the esc to power forward with some 0.0-1.0 percent.
+<pre><code class="language-c++">
+    /// Sets the esc to power forward with some 0.0-1.0 percent.
     void set_forward(float power) const {
         assert(power &lt;= 1.0 &amp;&amp; power &gt;= 0.0);
 
         // Forward is 1.5-2.0ms periods
         auto value = uint16_t(((1.5 + power * 0.5) / period) * max_pwm_duty);
         analogWrite(pwm_pin, value);
-    }
 </code></pre>
 <p>As you can see, its actually rather simple, thanks to Arduino. I want to untangle that second line for you, since
 there's

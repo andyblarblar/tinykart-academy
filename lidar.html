@@ -377,8 +377,10 @@ and is done on actual industrial robots.</p>
                 y /= 1000;
 
                 // Apply lidar offset
-                x += lidar_offset.x;
-                y += lidar_offset.y;
+                if (x != 0 &amp;&amp; y != 0) {
+                    x += lidar_offset.x;
+                    y += lidar_offset.y;
+                }
 
                 buffer.push_back(ScanPoint{x, y});
             }
@@ -390,8 +392,6 @@ and is done on actual industrial robots.</p>
             return std::move(buffer);
         }
 
-        return std::nullopt;
-    }
 </code></pre>
 <p>In the tinykart default implementation, this is configured to read from -90 to 90 degrees:</p>
 <pre><code class="language-c++">ScanBuilder scan_builder{360 - 90, 90, ScanPoint{0.1524, 0}};
