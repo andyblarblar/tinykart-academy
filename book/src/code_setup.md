@@ -9,10 +9,12 @@ machine.
 
 To do so:
 
-1. Open a git bash terminal on Windows (you can find this via a start menu search), or a terminal on Linux
+1. Open a CMD prompt on Windows (you can find this via a start menu search), or a terminal on Linux
 2. Use the `cd` command to navigate to the directory you want to keep your code in. For
    example: `cd C:\users\andy\documents\code\` on Windows or
    `cd ~\Documents\code` on *nix.
+    1. Keep in mind that some Windows systems have the documents folder direct to onedrive, so documents may not
+       actually be in users\user\Documents
 3. Clone the repo using: `git clone https://github.com/andyblarblar/tinykart-academy`
 4. You should now see a folder called "tinykart-academy" which contains the codebase
 
