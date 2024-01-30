@@ -326,6 +326,9 @@ we must interpolate the index with the start and end angles:</p>
 <p>With this, we have all that we need to interpret frames from the LiDAR! Armed with this information,
 I recommend messing around with main.cpp to log data read by the board, and monitor the results by using the PIO
 monitor.</p>
+<p>To open the monitor, first find the terminal icon in the bottom gutter near the upload button. This will open a terminal
+with the <code>pio</code> command sourced. Next, open a monitor to view the boards printfs by
+running <code>pio device monitor -b 115200</code>.</p>
 <h2 id="scan-building"><a class="header" href="#scan-building">Scan Building</a></h2>
 <p>Cool, so we can read frames. As it turns out, this actually isn't all that useful. This is because each frame actually
 only covers a very small region of the overall scan. This makes sending the LiDAR data much easier, but makes processing
