@@ -238,7 +238,7 @@ void loop() {
                 
                 logger.printf("*****START SCAN******\n");
                 for (auto &pt: scan) {
-                    logger.printf("Point: (%hu,%hu)\n", (uint16_t) pt.x, (uint16_t) pt.y);
+                    logger.printf("Point: (%hu,%hu)\n", (uint16_t) pt.x * 1000, (uint16_t) pt.y * 1000);
                 }
                 logger.printf("*****END SCAN******\n\n");
             }
