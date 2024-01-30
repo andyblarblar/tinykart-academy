@@ -420,7 +420,7 @@ and is done on actual industrial robots.</p>
                 
                 logger.printf(&quot;*****START SCAN******\n&quot;);
                 for (auto &amp;pt: scan) {
-                    logger.printf(&quot;Point: (%hu,%hu)\n&quot;, (uint16_t) pt.x, (uint16_t) pt.y);
+                    logger.printf(&quot;Point: (%hu,%hu)\n&quot;, (uint16_t) pt.x * 1000, (uint16_t) pt.y * 1000);
                 }
                 logger.printf(&quot;*****END SCAN******\n\n&quot;);
             }
