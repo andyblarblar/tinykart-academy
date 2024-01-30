@@ -180,6 +180,10 @@ With this, we have all that we need to interpret frames from the LiDAR! Armed wi
 I recommend messing around with main.cpp to log data read by the board, and monitor the results by using the PIO
 monitor.
 
+To open the monitor, first find the terminal icon in the bottom gutter near the upload button. This will open a terminal
+with the `pio` command sourced. Next, open a monitor to view the boards printfs by
+running `pio device monitor -b 115200`.
+
 ## Scan Building
 
 Cool, so we can read frames. As it turns out, this actually isn't all that useful. This is because each frame actually
