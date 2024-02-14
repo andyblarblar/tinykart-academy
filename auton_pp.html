@@ -240,7 +240,7 @@ With this in mind, it's clear why Ackermann kinematics are useful, as they give 
 given an arc.</p>
 <p>Pure pursuit is a tad more than that, however. It's main trinket is <strong>lookahead distance</strong>. Basically, PP will only
 calculate arcs to points so far away from itself, in order to strike a balance between making sudden turns and slow
-turns. You can think of lookahead distance as a tunable parameter that sets the &quot;aggressiveness&quot; of the karts steering.</p>
+turns. You can think of lookahead distance as a tunable parameter that sets the "aggressiveness" of the karts steering.</p>
 <p>Let's go through a pure pursuit iteration step by step.</p>
 <h3 id="enforce-lookahead"><a class="header" href="#enforce-lookahead">Enforce lookahead</a></h3>
 <p>When using a path with multiple points, the first step would be to find the intersection of the lookahead distance and
@@ -289,7 +289,7 @@ than the lookahead distance.</p>
 friction.</p>
 <h2 id="your-turn"><a class="header" href="#your-turn">Your turn</a></h2>
 <p>It's finally time for your last assignment! Of course, this will have you writing and tuning your own pure pursuit.
-Build this off of your code from the last chapter. </p>
+Build this off of your code from the last chapter.</p>
 <p>Find this line in your loop:</p>
 <pre><code class="language-c++">auto command = pure_pursuit::calculate_command_to_point(tinyKart, target_pt, 1.0);
 </code></pre>

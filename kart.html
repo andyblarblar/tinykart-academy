@@ -274,14 +274,14 @@ tinyKart-&gt;set_steering(command.steering_angle);
 </code></pre>
 <p>Feel free to explore the other methods on the class, as they allow for movement in other ways, such as in reverse.</p>
 <p>While this high level API is all you will be working with for the autonomy, I want to briefly show how its implemented:</p>
-<pre><code class="language-c++">
+<pre><code class="language-c++">        analogWrite(pwm_pin, value);
+    }
+
     /// Sets the esc to power forward with some 0.0-1.0 percent.
-    void set_forward(float power) const {
+    void set_forward(float power) {
         assert(power &lt;= 1.0 &amp;&amp; power &gt;= 0.0);
 
-        // Forward is 1.5-2.0ms periods
-        auto value = uint16_t(((1.5 + power * 0.5) / period) * max_pwm_duty);
-        analogWrite(pwm_pin, value);
+        this-&gt;was_forward = true;
 </code></pre>
 <p>As you can see, its actually rather simple, thanks to Arduino. I want to untangle that second line for you, since
 there's
@@ -293,7 +293,7 @@ and the more buckets we have the more we can slice the 0-100% range into finer p
 buckets. For example, Arduino defaults to an 8 bit PWM, which means that setting the register to 255 will be 100% duty
 cycle,
 0 will be 0%, and 255//2 will be closeish to 50%.</p>
-<p>In the case of our ST board, we have a 12-bit PWM, which means that we have 4092 &quot;buckets&quot;. This means to select some
+<p>In the case of our ST board, we have a 12-bit PWM, which means that we have 4092 "buckets". This means to select some
 percent
 duty cycle, you use the equation: \( power * 4092 \), where power is in range [0, 1].</p>
 <p>Second, the <code>analogWrite</code> call sets duty cycle, not duty width, which is what we're looking for. This means that we need
@@ -332,7 +332,7 @@ quite a large value on the embedded world.</p>
 have very little resolution. This means that while you can still get rather specific with your steering angles (
 certainly fine for our use),
 small angle increments can sometimes have no effect or a large effect depending on if it causes us to step into
-another &quot;bucket&quot;.</p>
+another "bucket".</p>
 <p>While neither of these are really something you need to worry about, its worth taking the time to think about how your
 hardware will constrain your autonomous routines, as this is something that is far more pronounced on a full size
 vehicle.</p>
@@ -342,10 +342,10 @@ vehicle.</p>
 hack it a bit.</p>
 <p>Your challenge today is to make the kart slow proportionally to the distance in front of it. This will be very useful in
 the autonomous routines later, as it will help prevent the kart from sliding around. Doing this will require you to use
-distance values from the LiDAR again, but with it facing forward as is proper. Specifically, the kart should be able to 
+distance values from the LiDAR again, but with it facing forward as is proper. Specifically, the kart should be able to
 avoid hitting an object with much speed, and preferably stop before hitting it at all. Consider experimenting with
-using reverse as a brake. </p>
-<p>Start slow and build your way up in speed and see how fast you can go! This experience will come in handy later when 
+using reverse as a brake.</p>
+<p>Start slow and build your way up in speed and see how fast you can go! This experience will come in handy later when
 testing autonomous things.</p>
 <p>Note that when the kart boots, it starts in a paused state, indicated by the yellow LED. In this state, it rejects all
 commands. To allow it to move, press the blue button. Press the button again to stop the kart (this is what you were

@@ -418,20 +418,20 @@ and is done on actual industrial robots.</p>
             if (maybe_scan) {
                 auto scan = *maybe_scan;
                 
-                logger.printf(&quot;*****START SCAN******\n&quot;);
+                logger.printf("*****START SCAN******\n");
                 for (auto &amp;pt: scan) {
-                    logger.printf(&quot;Point: (%hu,%hu)\n&quot;, (uint16_t) (pt.x * 1000), (uint16_t) (pt.y * 1000));
+                    logger.printf("Point: (%hu,%hu)\n", (uint16_t) (pt.x * 1000), (uint16_t) (pt.y * 1000));
                 }
-                logger.printf(&quot;*****END SCAN******\n\n&quot;);
+                logger.printf("*****END SCAN******\n\n");
             }
         } else {
             switch (scan_res.error) {
                 case ScanResult::Error::CRCFail:
-                    logger.printf(&quot;CRC error!\n&quot;);
+                    logger.printf("CRC error!\n");
                     break;
 
                 case ScanResult::Error::HeaderByteWrong:
-                    logger.printf(&quot;Header byte wrong!\n&quot;);
+                    logger.printf("Header byte wrong!\n");
                     break;
             }
         }
@@ -445,7 +445,7 @@ coordinates
 is that they are in right-hand-rule. That is, x is positive forwards and y is positive to the left. This is the standard
 coordinate system in robotics.</p>
 <h3 id="homework"><a class="header" href="#homework">Homework</a></h3>
-<p>Now it's time for your challenge. Given the above code, create a program that prints &quot;GOTCHA!&quot; whenever someone
+<p>Now it's time for your challenge. Given the above code, create a program that prints "GOTCHA!" whenever someone
 is 50cm or less from the <em>back</em> of the LiDAR. This will only require modifying things in main.cpp, and only in loop and
 the globals. If you have any questions on units, formats etc., read the docs in the code! This is good practice for
 working

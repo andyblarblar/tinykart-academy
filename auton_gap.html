@@ -236,7 +236,7 @@ that fulfill two conditions:</p>
 <li>Find the largest gap in the collection of gaps (Hint: what data structure would be good for this?)</li>
 <li>return the center point of that gap as the target point</li>
 </ol>
-<p>And as it turns out, that's really the best you can make the naive approach. The downfall of this approach is that it 
+<p>And as it turns out, that's really the best you can make the naive approach. The downfall of this approach is that it
 has a tendency to cut corners, as the kart's limited turning radius means it needs to approach the corner from the far
 wall in order to arc properly. The next approach we will discuss will aim to solve this.</p>
 <h3 id="your-turn"><a class="header" href="#your-turn">Your turn</a></h3>
@@ -244,7 +244,7 @@ wall in order to arc properly. The next approach we will discuss will aim to sol
 <p>NOTE: This section makes use of C++'s std::optional. If you haven't worked with it before, please check out this
 article <a href="https://dev.to/delta456/modern-c-stdoptional-58ga">here</a>.</p>
 </blockquote>
-<p>While things are still simple, it's time for you to get your hands dirty and get this kart moving autonomously! In this 
+<p>While things are still simple, it's time for you to get your hands dirty and get this kart moving autonomously! In this
 section, you will be implementing the above algorithm yourself. To begin, replace your main loop with the following:</p>
 <details>
     <summary>code</summary>
@@ -289,7 +289,7 @@ void loop() {
                 if (maybe_target_pt) {
                     auto target_pt = *maybe_target_pt;
 
-                    logger.printf(&quot;Target point: (%hi,%hi)\n&quot;, (int16_t) (target_pt.x * 1000),
+                    logger.printf("Target point: (%hi,%hi)\n", (int16_t) (target_pt.x * 1000),
                                   (int16_t) (target_pt.y * 1000));
 
                     // Find command to drive to point
@@ -298,7 +298,7 @@ void loop() {
                     // Set throttle proportional to distance to point in front of kart
                     command.throttle_percent = mapfloat(front_obj_dist, 0.1, 10.0, 0.15, tinyKart-&gt;get_speed_cap());
 
-                    logger.printf(&quot;Command: throttle %hu, angle %hi\n&quot;, (uint16_t) (command.throttle_percent * 100),
+                    logger.printf("Command: throttle %hu, angle %hi\n", (uint16_t) (command.throttle_percent * 100),
                                   (int16_t) (command.steering_angle));
 
                     // Actuate kart
@@ -309,11 +309,11 @@ void loop() {
         } else {
             switch (scan_res.error) {
                 case ScanResult::Error::CRCFail:
-                    logger.printf(&quot;CRC error!\n&quot;);
+                    logger.printf("CRC error!\n");
                     break;
 
                 case ScanResult::Error::HeaderByteWrong:
-                    logger.printf(&quot;Header byte wrong!\n&quot;);
+                    logger.printf("Header byte wrong!\n");
                     break;
             }
         }
@@ -324,25 +324,25 @@ void loop() {
 <p>Don't worry about the loop much for now, as it contains the path tracker you will be making next chapter. A reference
 implementation is included here to ensure that you can test your planner. All you need to work on for now is <code>find_gap_naive</code>,
 which will contain the algorithm detailed above.</p>
-<p>Once you have a complete implementation, test it with the tinykart in a relatively constrained space, so the lidar can 
-see things. Don't stress too much if it isn't perfect, but try to hack on the algorithm until you're confident you can't 
+<p>Once you have a complete implementation, test it with the tinykart in a relatively constrained space, so the lidar can
+see things. Don't stress too much if it isn't perfect, but try to hack on the algorithm until you're confident you can't
 make it better.</p>
 <p>This will likely take quite a long time, possibly days depending on how much time you have to work on TinyKart. Feel free
 to take your time with this, and ensure you understand what is happening. This process will be very similar to when you're
-working on it yourself, so its important to get this down. </p>
-<p>If you're ever completely stuck, there is a reference implementation in <code>libs/gap_follow/naive_gap_follow.cpp</code>. 
+working on it yourself, so its important to get this down.</p>
+<p>If you're ever completely stuck, there is a reference implementation in <code>libs/gap_follow/naive_gap_follow.cpp</code>.
 I would still try to finish this yourself though, because there are many ways to approach this implementation and things
 only get more complex from here.</p>
 <h2 id="an-improved-approach"><a class="header" href="#an-improved-approach">An Improved Approach</a></h2>
 <p>With that experience under your belt, lets introduce another approach to the problem. This approach can be summarized as
-&quot;Throw yourself at the largest wall&quot;. </p>
+"Throw yourself at the largest wall".</p>
 <img style="width: 50%;" src="assets/bubble.png">
-<p>Essentially, we redefine the largest gap to be the largest continues non-zero 
-span of points. This means that our target point will fling us directly at a wall. That's insane! Why would we want to 
+<p>Essentially, we redefine the largest gap to be the largest continues non-zero
+span of points. This means that our target point will fling us directly at a wall. That's insane! Why would we want to
 do that? The idea is that doing so will cause us to be on the outside of corners, which means that when we corner our
 kart will have a wider angle to perform its turn. Done well, this almost looks like a racing line. Of course, with the
 current implementation, we will just plow into a wall. So what stops us from doing so?</p>
-<p>To solve this issue, we add a &quot;bubble&quot; that removes points in front of the kart. This looks like:</p>
+<p>To solve this issue, we add a "bubble" that removes points in front of the kart. This looks like:</p>
 <ol>
 <li>Find the closest point in the scan to the kart</li>
 <li>Find all points r distance away from that point</li>

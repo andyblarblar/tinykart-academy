@@ -184,9 +184,9 @@ embedded
 programming without spending a semester reading docs. If you've worked with Arduino before, you've probably worked with
 <em>the</em> Arduino, the UNO v3:</p>
 <img src="https://store.arduino.cc/cdn/shop/products/A000066_03.front_571x429.jpg?v=1629815860"/>
-<p>What most don't know is that Arduino is actually completely independent of the UNO, mega, and other &quot;Arduino&quot; branded
+<p>What most don't know is that Arduino is actually completely independent of the UNO, mega, and other "Arduino" branded
 dev-boards. In this respect, Arduino is simply a C++ library, similar to something like ROS.</p>
-<p>So how does this work then? Well, Arduino can be ported between boards using what are called &quot;Cores&quot;. Cores are
+<p>So how does this work then? Well, Arduino can be ported between boards using what are called "Cores". Cores are
 basically
 just implementations of the Arduino API (think <code>writeDigital()</code>, <code>readAnalog()</code> etc.) using different, lower-level
 libraries specific to some board or vendor. This way, you can use Arduino the same way across boards, while the actual
@@ -279,7 +279,7 @@ about this, unless you are adding more sensors and also cannot use Arduino.</li>
 </li>
 <li><strong>test</strong>: Unit tests go here, although these are TBD.</li>
 </ul>
-<h2 id="tinykart-extensions"><a class="header" href="#tinykart-extensions">TinyKart &quot;Extensions&quot;</a></h2>
+<h2 id="tinykart-extensions"><a class="header" href="#tinykart-extensions">TinyKart "Extensions"</a></h2>
 <p>To make things easier for you, we provide a bit of a framework for TinyKart, containing implementations of the harder
 parts of using Arduino to interface with the required hardware. This section will contain a brief explanation of these
 components.</p>
@@ -314,7 +314,7 @@ in logger.hpp.</p>
 <p>Ex. to printf:</p>
 <pre><code class="language-c++">                    auto target_pt = *maybe_target_pt;
 
-                    logger.printf(&quot;Target point: (%hi, %hi)\n&quot;, (int16_t) (target_pt.x * 1000),
+                    logger.printf("Target point: (%hi, %hi)\n", (int16_t) (target_pt.x * 1000),
                                   (int16_t) (target_pt.y * 1000));
 </code></pre>
 <p>Unlike the Serial library, this printf is actually non-blocking, and uses interrupts to process the message behind the
