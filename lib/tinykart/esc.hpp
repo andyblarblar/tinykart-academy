@@ -17,6 +17,8 @@ class ESC {
     int max_pwm_duty;
     /// Max PWM period in ms
     float period;
+    /// Tracks if we were moving forward, for clearing locks
+    bool was_forward = false;
 
 public:
     /// Initializes an ESC.
@@ -30,7 +32,7 @@ public:
     }
 
     /// Arms the ESC. Set to neutral after exiting.
-    void arm() const {
+    void arm() {
         this->set_reverse_raw(1.0);
         delay(int(period * 2));
 
@@ -42,15 +44,17 @@ public:
     }
 
     /// Sets the motor to neutral.
-    void set_neutral() const {
+    void set_neutral() {
         // Neutral is 1.5ms periods
         auto value = uint16_t((1.5 / period) * max_pwm_duty);
         analogWrite(pwm_pin, value);
     }
 
     /// Sets the esc to power forward with some 0.0-1.0 percent.
-    void set_forward(float power) const {
+    void set_forward(float power) {
         assert(power <= 1.0 && power >= 0.0);
+
+        this->was_forward = true;
 
         // Forward is 1.5-2.0ms periods
         auto value = uint16_t(((1.5 + power * 0.5) / period) * max_pwm_duty);
@@ -58,7 +62,7 @@ public:
     }
 
     /// Forces the ESC to move in reverse. May not work without clearing the lockout.
-    void set_reverse_raw(float power) const {
+    void set_reverse_raw(float power) {
         assert(power <= 1.0 && power >= 0.0);
 
         // Reverse is 1.0-1.5ms periods
@@ -67,15 +71,18 @@ public:
     }
 
     /// Sets the esc to power reverse with some 0.0-1.0 percent.
-    void set_reverse(float power) const {
+    void set_reverse(float power) {
         assert(power <= 1.0 && power >= 0.0);
 
-        this->set_reverse_raw(0.4);
-        delay(uint16_t(period * 2));
-
         // Clear lockout
-        this->set_neutral();
-        delay(uint16_t(period * 4));
+        if (this->was_forward) {
+            this->set_reverse_raw(0.4);
+            delay(uint16_t(period * 2));
+
+            this->set_neutral();
+            delay(uint16_t(period * 4));
+            this->was_forward = false;
+        }
 
         this->set_reverse_raw(power);
     }
