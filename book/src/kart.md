@@ -109,11 +109,11 @@ To do this:
 4. Jump a ground pin from the controller to the same breadboard lane as the other two grounds, creating a common ground
 5. Finally, jump the ESC and Servo PWM lines to these exact pins:
 
-<img style="width: 100%" src="assets/actuator_connect.png">
+<img style="width: 100%" src="assets/tinykart-wiring-diagram.png">
 
-Red being A0, and green being D0.
+Purple being A0, and green being D0. (**NOTE:** In real life the A0 & D0 wires will be white)
 
-Now, connect the battery to the esc, and power to the controller. Now, press and hold the little blue
+Now, connect the battery to the ESC, and power to the controller. Now, press and hold the little blue
 button on the ESC to turn it on. Finally, reset the controller. You should see the kart do a little jump, and
 maybe move its wheels. This is good! This means that the ESC is armed, and ready to move.
 
