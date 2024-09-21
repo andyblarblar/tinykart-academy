@@ -655,7 +655,7 @@ Be careful with the baby lidar! They scratch very easily, which may lower accura
 the
 board side. The PWM input is unused, and the other two pins are simply power and ground.</p>
 <p>While there are a variety of ways to connect these to the board, TinyKart is configured to use the following pins:</p>
-<img src="assets/lidar_connect.png"/>
+<img src="assets/lidar-connect.png"/>
 <p>Go ahead and connect these to the respective pins on the wire connected to baby lidar. The end result should look
 something like this:</p>
 <img src="assets/lidar_connected.jpg"/>
@@ -970,9 +970,9 @@ to do a tiny bit of wiring to get stuff setup. Each of the actuators has a conne
 <li>Jump a ground pin from the controller to the same breadboard lane as the other two grounds, creating a common ground</li>
 <li>Finally, jump the ESC and Servo PWM lines to these exact pins:</li>
 </ol>
-<img style="width: 100%" src="assets/actuator_connect.png">
-<p>Red being A0, and green being D0.</p>
-<p>Now, connect the battery to the esc, and power to the controller. Now, press and hold the little blue
+<img style="width: 100%" src="assets/tinykart-wiring-diagram.png">
+<p>Purple being A0, and green being D0. (<strong>NOTE:</strong> In real life the A0 &amp; D0 wires will be white)</p>
+<p>Now, connect the battery to the ESC, and power to the controller. Now, press and hold the little blue
 button on the ESC to turn it on. Finally, reset the controller. You should see the kart do a little jump, and
 maybe move its wheels. This is good! This means that the ESC is armed, and ready to move.</p>
 <h2 id="the-code"><a class="header" href="#the-code">The code</a></h2>
