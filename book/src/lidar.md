@@ -68,7 +68,7 @@ board side. The PWM input is unused, and the other two pins are simply power and
 
 While there are a variety of ways to connect these to the board, TinyKart is configured to use the following pins:
 
-<img src="assets/lidar_connect.png"/>
+<img src="assets/lidar-connect.png"/>
 
 Go ahead and connect these to the respective pins on the wire connected to baby lidar. The end result should look
 something like this:
