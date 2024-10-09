@@ -586,7 +586,7 @@ raw data returned from the driver. These both live in global scope:</p>
 <pre><code class="language-c++">LD06 ld06{};
 
 // Scan processor
-ScanBuilder scan_builder{360 - 90, 90, ScanPoint{0.1524, 0}};
+ScanBuilder scan_builder{180, 360, ScanPoint{0.1524, 0}};
 </code></pre>
 <p>These will be introduced further in the next chapter.</p>
 <h3 id="logger"><a class="header" href="#logger">Logger</a></h3>
@@ -829,7 +829,7 @@ and is done on actual industrial robots.</p>
 
 </code></pre>
 <p>In the tinykart default implementation, this is configured to read from -90 to 90 degrees:</p>
-<pre><code class="language-c++">ScanBuilder scan_builder{360 - 90, 90, ScanPoint{0.1524, 0}};
+<pre><code class="language-c++">ScanBuilder scan_builder{180, 360, ScanPoint{0.1524, 0}};
 </code></pre>
 <h2 id="putting-it-all-together"><a class="header" href="#putting-it-all-together">Putting it all together</a></h2>
 <p>Time for you to get your hands dirty! Before anything else, replace your loop with the one below:</p>

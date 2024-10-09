@@ -397,7 +397,7 @@ and is done on actual industrial robots.</p>
 
 </code></pre>
 <p>In the tinykart default implementation, this is configured to read from -90 to 90 degrees:</p>
-<pre><code class="language-c++">ScanBuilder scan_builder{360 - 90, 90, ScanPoint{0.1524, 0}};
+<pre><code class="language-c++">ScanBuilder scan_builder{180, 360, ScanPoint{0.1524, 0}};
 </code></pre>
 <h2 id="putting-it-all-together"><a class="header" href="#putting-it-all-together">Putting it all together</a></h2>
 <p>Time for you to get your hands dirty! Before anything else, replace your loop with the one below:</p>
