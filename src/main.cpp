@@ -15,7 +15,7 @@ TinyKart *tinyKart;
 LD06 ld06{};
 
 // Scan processor
-ScanBuilder scan_builder{360 - 90, 90, ScanPoint{0.1524, 0}};
+ScanBuilder scan_builder{180, 360, ScanPoint{0.1524, 0}};
 
 /// Starts/stops the kart
 void estop() {
