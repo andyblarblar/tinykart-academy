@@ -238,7 +238,7 @@ void loop() {
                 
                 logger.printf("*****START SCAN******\n");
                 for (auto &pt: scan) {
-                    logger.printf("Point: (%hu,%hu)\n", (uint16_t) (pt.x * 1000), (uint16_t) (pt.y * 1000));
+                    logger.printf("Point: (%hu,%hu)\n", (int16_t) (pt.x * 1000), (uint16_t) (pt.y * 1000));
                 }
                 logger.printf("*****END SCAN******\n\n");
             }
@@ -268,7 +268,7 @@ coordinate system in robotics.
 ### Homework
 
 Now it's time for your challenge. Given the above code, create a program that prints "GOTCHA!" whenever someone
-is 50cm or less from the _back_ of the LiDAR. This will only require modifying things in main.cpp, and only in loop and
+is 50cm or less from the _Front_ of the LiDAR. This will only require modifying things in main.cpp, and only in loop and
 the globals. If you have any questions on units, formats etc., read the docs in the code! This is good practice for
 working
 on larger projects, since rarely will there be guides as verbose as this one to step through the code.
